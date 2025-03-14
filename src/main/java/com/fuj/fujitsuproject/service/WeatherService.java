@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -54,11 +55,16 @@ public class WeatherService {
         weatherRepository.saveAll(weatherData);
     }
 
-    public Weather findWeatherByCityAndTime(City city, LocalDateTime time) {
+    public Weather findWeatherByCityAndTime(City city, Optional<LocalDateTime> time) {
+
+        LocalDateTime timeToSearchBy = time.orElseGet(LocalDateTime::now);
+
         return weatherRepository
-                .findWeatherByStationAndTime(city.getStationName(), time)
+                .findWeatherByStationAndTime(city.getStationName(), timeToSearchBy)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Couldn't find weather data for station=" + city.getStationName() + ", "
                                 + " time=" + time));
     }
+
+
 }

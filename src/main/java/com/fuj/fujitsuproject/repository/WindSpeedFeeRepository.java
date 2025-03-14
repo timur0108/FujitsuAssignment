@@ -19,11 +19,23 @@ public interface WindSpeedFeeRepository extends JpaRepository<WindSpeedFee, Long
     WHERE vehicle_id = :vehicleId
     AND min_speed <= :speed
     AND max_speed >= :speed
-    AND created_At <= :time
+    AND created_at <= :time
     ORDER BY created_at DESC
     LIMIT 1
 """, nativeQuery = true)
     Optional<WindSpeedFee> findWindSpeedFeeByVehicleIdAndWindSpeedAndTime(
             @Param("vehicleId") Long vehicleId, @Param("speed") BigDecimal speed,
             @Param("time") LocalDateTime time);
+
+    @Query(value = """
+    SELECT * FROM wsef
+    WHERE vehicle_id = :vehicleId
+    AND min_speed <= :speed
+    AND max_speed >= :speed
+    AND active = true
+    ORDER BY created_at DESC
+    LIMIT 1
+""", nativeQuery = true)
+    Optional<WindSpeedFee> findLatestActiveWindSpeedFeeByVehicleIdAndSpeed(
+            @Param("vehicleId") Long vehicleId, @Param("speed") BigDecimal speed);
 }

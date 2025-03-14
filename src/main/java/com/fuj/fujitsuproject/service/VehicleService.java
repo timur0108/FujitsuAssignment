@@ -16,7 +16,7 @@ public class VehicleService {
 
     public Vehicle findVehicleByName(String vehicleName) {
         return vehicleRepository
-                .findByNameEquals(vehicleName.toLowerCase())
+                .findByNameEqualsIgnoreCase(vehicleName)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Couldn't find vehicle with name=" + vehicleName
                 ));

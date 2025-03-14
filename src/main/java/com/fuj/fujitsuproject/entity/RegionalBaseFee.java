@@ -28,6 +28,9 @@ public class RegionalBaseFee {
     @Column(nullable = false, precision = 5, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 }

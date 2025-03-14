@@ -1,7 +1,7 @@
 package com.fuj.fujitsuproject.controller;
 
 import com.fuj.fujitsuproject.DTO.DeliveryFeeCalculationDTO;
-import com.fuj.fujitsuproject.service.FeeService;
+import com.fuj.fujitsuproject.service.FeeCalculationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @RequestMapping("api/fee/calculate")
 public class DeliveryFeeController {
 
-    private final FeeService feeService;
+    private final FeeCalculationService feeCalculationService;
 
     @PostMapping
     public ResponseEntity<BigDecimal> calculateDeliveryFee(
@@ -23,7 +23,7 @@ public class DeliveryFeeController {
 
         log.info("Arrived POST request to calculate delivery fee.");
         return ResponseEntity.ok(
-                feeService.calculateDeliveryFee(deliveryFeeCalculationDTO)
+                feeCalculationService.calculateDeliveryFee(deliveryFeeCalculationDTO)
         );
     }
 }

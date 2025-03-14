@@ -30,6 +30,9 @@ public class WeatherPhenomenonFee {
     @Column(name = "forbidden", nullable = false)
     private boolean forbidden;
 
+    @Column(name = "active", nullable = false)
+    private boolean active;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 }

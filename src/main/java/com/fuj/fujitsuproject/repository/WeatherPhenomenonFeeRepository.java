@@ -17,12 +17,23 @@ public interface WeatherPhenomenonFeeRepository extends JpaRepository<WeatherPhe
     @Query(value = """
     SELECT * FROM wpef
     WHERE vehicle_id = :vehicleId
-    AND phenomenon LIKE %:weatherPhenomenon%
-    AND created_At <= :time
+    AND :weatherPhenomenon LIKE CONCAT('%', phenomenon, '%')
+    AND created_at <= :time
     ORDER BY created_at DESC
     LIMIT 1
 """, nativeQuery = true)
     Optional<WeatherPhenomenonFee> findWeatherPhenomenonFeeByVehicleIdAndPhenomenonAndTime(
             @Param("vehicleId") Long vehicleId, @Param("weatherPhenomenon") String weatherPhenomenon,
             @Param("time") LocalDateTime time);
+
+    @Query(value = """
+    SELECT * FROM wpef
+    WHERE vehicle_id = :vehicleId
+    AND :weatherPhenomenon LIKE CONCAT('%', phenomenon, '%')
+    AND active = true
+    ORDER BY created_at DESC
+    LIMIT 1
+""", nativeQuery = true)
+    Optional<WeatherPhenomenonFee> findLatestWeatherPhenomenonFeeByVehicleIdAndPhenomenon(
+            @Param("vehicleId") Long vehicleId, @Param("weatherPhenomenon") String weatherPhenomenon);
 }

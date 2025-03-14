@@ -22,4 +22,5 @@ public interface WeatherRepository extends JpaRepository<Weather, Long> {
 """, nativeQuery = true)
     Optional<Weather> findWeatherByStationAndTime(@Param("stationName") String stationName,
     @Param("time")LocalDateTime time);
+
 }

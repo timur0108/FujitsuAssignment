@@ -25,4 +25,16 @@ public interface AirTemperatureFeeRepository extends JpaRepository<AirTemperatur
     Optional<AirTemperatureFee> findAirTemperatureFeeByVehicleIdAndTemperatureAndTime(
             @Param("vehicleId") Long vehicleId, @Param("temperature")BigDecimal temperature,
             @Param("time")LocalDateTime time);
+
+    @Query(value = """
+    SELECT * FROM atef
+    WHERE vehicle_id = :vehicleId
+    AND min_temperature <= :temperature
+    AND max_temperature >= :temperature
+    AND active = true
+    ORDER BY created_at DESC
+    LIMIT 1
+""", nativeQuery = true)
+    Optional<AirTemperatureFee> findLatestActiveAirTemperatureFeeByVehicleIdAndTemperature(
+            @Param("vehicleId") Long vehicleId, @Param("temperature")BigDecimal temperature);
 }

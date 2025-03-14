@@ -29,16 +29,31 @@ public class AirTemperatureFeeService implements WeatherBasedFeeService{
                         vehicle.getId(), weather.getAirTemperature(), time);
     }
 
-    @Override
-    public BigDecimal calculateFee(Vehicle vehicle, Weather weather, LocalDateTime time) {
+    private Optional<AirTemperatureFee> findLatestActiveAirTemperatureFeeByVehicleAndWeather(
+            Vehicle vehicle, Weather weather) {
 
-        return findAirTemperatureFeeByVehicleAndWeatherAndTime(
-                vehicle, weather, time)
-                .map(fee -> {
-                    if (fee.isForbidden()) throw new VehicleForbiddenException();
-                    return fee.getAmount();
-                })
-                .orElse(BigDecimal.ZERO);
+        return airTemperatureFeeRepository
+                .findLatestActiveAirTemperatureFeeByVehicleIdAndTemperature(
+                        vehicle.getId(), weather.getAirTemperature());
+    }
+
+    @Override
+    public BigDecimal calculateFee(Vehicle vehicle, Weather weather, Optional<LocalDateTime> time) {
+
+        Optional<AirTemperatureFee> airTemperatureFeeOptional;
+
+        if (time.isPresent()) airTemperatureFeeOptional = airTemperatureFeeRepository
+                .findAirTemperatureFeeByVehicleIdAndTemperatureAndTime(vehicle.getId(), weather.getAirTemperature(), time.get());
+        else airTemperatureFeeOptional = airTemperatureFeeRepository
+                .findLatestActiveAirTemperatureFeeByVehicleIdAndTemperature(vehicle.getId(), weather.getAirTemperature());
+
+        if (airTemperatureFeeOptional.isEmpty()) return BigDecimal.ZERO;
+
+        AirTemperatureFee fee = airTemperatureFeeOptional.get();
+        if (fee.isForbidden()) throw new VehicleForbiddenException();
+
+        log.info("air temperature fee=" + fee.getAmount().toString());
+        return fee.getAmount();
 
     }
 }
