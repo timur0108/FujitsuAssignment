@@ -46,32 +46,4 @@ public class WeatherDataScheduler {
 
         weatherService.saveObservationData(observations);
     }
-
-//    @Scheduled(cron = "${scheduler.cron}")
-//    public void getWeatherData() {
-//        Observations observations = weatherDataFetcher.fetchWeatherData();
-//
-//        LocalDateTime observationTime = LocalDateTime
-//                .ofInstant(Instant.ofEpochSecond(observations.getTimestamp()),
-//                        TimeZone.getDefault().toZoneId());
-//
-//        List<Weather> weatherData = new ArrayList<>();
-//
-//        observations.getStations().stream()
-//                .filter(station -> station.getName().equals("Tallinn-Harku")
-//                || station.getName().equals("Tartu-Tõravere")
-//                || station.getName().equals("Pärnu"))
-//                .map(station -> {
-//                    Weather weather = new Weather();
-//                    weather.setObservationTime(observationTime);
-//                    weather.setWeatherPhenomenon(station.getPhenomenon());
-//                    weather.setAirTemperature(station.getAirTemperature());
-//                    weather.setWindSpeed(station.getWindSpeed());
-//                    weather.setStationName(station.getName());
-//                    weather.setWmoCode(station.getWmoCode());
-//                    return weather;
-//                }).forEach(weatherData::add);
-//
-//        System.out.println(weatherData);
-//    }
 }

@@ -19,6 +19,7 @@ public interface WeatherPhenomenonFeeRepository extends JpaRepository<WeatherPhe
     WHERE vehicle_id = :vehicleId
     AND :weatherPhenomenon LIKE CONCAT('%', phenomenon, '%')
     AND created_at <= :time
+    AND (deactivated_at IS NULL OR deactivated_at  > :time)
     ORDER BY created_at DESC
     LIMIT 1
 """, nativeQuery = true)

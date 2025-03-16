@@ -6,6 +6,19 @@ INSERT INTO vehicle (name) VALUES ('car');
 INSERT INTO vehicle (name) VALUES ('scooter');
 INSERT INTO vehicle (name) VALUES ('bike');
 
+INSERT INTO rbf (city_id, vehicle_id, amount, created_at, active, deactivated_at)
+VALUES
+    ((SELECT id FROM city WHERE name = 'Tallinn'), (SELECT id FROM vehicle WHERE name = 'car'), 3.80, '2024-12-01 12:00:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Tallinn'), (SELECT id FROM vehicle WHERE name = 'scooter'), 3.30, '2024-11-15 08:30:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Tallinn'), (SELECT id FROM vehicle WHERE name = 'bike'), 2.90, '2024-10-20 15:45:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Tartu'), (SELECT id FROM vehicle WHERE name = 'car'), 3.20, '2024-12-05 10:15:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Tartu'), (SELECT id FROM vehicle WHERE name = 'scooter'), 2.80, '2024-11-10 14:20:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Tartu'), (SELECT id FROM vehicle WHERE name = 'bike'), 2.30, '2024-09-30 07:10:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Pärnu'), (SELECT id FROM vehicle WHERE name = 'car'), 2.80, '2024-10-25 13:40:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Pärnu'), (SELECT id FROM vehicle WHERE name = 'scooter'), 2.20, '2024-09-05 09:55:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Pärnu'), (SELECT id FROM vehicle WHERE name = 'bike'), 1.80, '2024-08-15 16:30:00', FALSE, '2025-03-01 12:00:00'),
+    ((SELECT id FROM city WHERE name = 'Pärnu'), (SELECT id FROM vehicle WHERE name = 'bike'), 2.5, '2024-06-15 16:30:00', FALSE, '2024-08-15 17:00:00');
+
 INSERT INTO rbf (city_id, vehicle_id, amount, active)
 VALUES
     ((SELECT id FROM city WHERE name = 'Tallinn'), (SELECT id FROM vehicle WHERE name = 'car'), 4.00, TRUE),

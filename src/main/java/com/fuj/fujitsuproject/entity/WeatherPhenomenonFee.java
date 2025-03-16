@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "wpef")
 @NoArgsConstructor
-public class WeatherPhenomenonFee {
+public class WeatherPhenomenonFee extends BaseFeeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,4 +35,7 @@ public class WeatherPhenomenonFee {
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "deactivated_at")
+    private LocalDateTime deactivatedAt;
 }

@@ -26,6 +26,7 @@ CREATE TABLE rbf (
     amount DECIMAL(5, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     active BOOLEAN NOT NULL,
+    deactivated_at TIMESTAMP,
     FOREIGN KEY (city_id) REFERENCES city(id),
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
@@ -39,6 +40,7 @@ CREATE TABLE atef (
     forbidden BOOLEAN NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     active BOOLEAN NOT NULL,
+    deactivated_at TIMESTAMP,
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
 
@@ -51,6 +53,7 @@ CREATE TABLE wsef (
     forbidden BOOLEAN NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     active BOOLEAN NOT NULL,
+    deactivated_at TIMESTAMP,
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
 
@@ -62,6 +65,7 @@ CREATE TABLE wpef(
     vehicle_id BIGINT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     active BOOLEAN NOT NULL,
+    deactivated_at TIMESTAMP,
     FOREIGN KEY (vehicle_id) REFERENCES vehicle(id)
 );
 

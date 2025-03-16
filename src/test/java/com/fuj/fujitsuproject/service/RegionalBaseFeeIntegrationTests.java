@@ -57,4 +57,34 @@ public class RegionalBaseFeeIntegrationTests {
         assertNotNull(feeAmount);
         assertTrue(feeAmount.compareTo(expectedFee) == 0);
     }
+
+    @ParameterizedTest
+    @CsvSource({
+            "bike, Tartu, 2.3, 2025-01-01T12:00:00",
+            "Scooter, Tartu, 2.8, 2025-01-01T12:00:00",
+            "cAr, Tartu, 3.2, 2025-01-01T12:00:00",
+            "CAR, Tallinn, 3.8, 2025-01-01T12:00:00",
+            "scooTER, Tallinn, 3.3, 2025-01-01T12:00:00",
+            "BIKE, Tallinn, 2.9, 2025-01-01T12:00:00",
+            "car, Pärnu, 2.8, 2025-01-01T12:00:00",
+            "scooter, Pärnu, 2.2, 2025-01-01T12:00:00",
+            "Bike, Pärnu, 1.8, 2025-01-01T12:00:00",
+            "Bike, Pärnu, 2.5, 2024-08-14T17:00:00",
+    })
+    void testRegionalBaseFeeCalculationWithTimeProvided(
+            String vehicleName, String cityName, BigDecimal expectedFee, LocalDateTime time
+    ) {
+        Vehicle vehicle = vehicleRepository.findByNameEqualsIgnoreCase(vehicleName)
+                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+
+        City city = cityRepository.findByNameEquals(cityName)
+                .orElseThrow(() -> new RuntimeException("City not found"));
+
+        BigDecimal feeAmount = regionalBaseFeeService.calculateFeeForVehicleAndCity(
+                vehicle, city, Optional.of(time));
+
+        assertNotNull(feeAmount);
+        assertTrue(feeAmount.compareTo(expectedFee) == 0);
+
+    }
 }

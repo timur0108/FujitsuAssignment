@@ -1,8 +1,11 @@
 package com.fuj.fujitsuproject.service;
 
+import com.fuj.fujitsuproject.DTO.AirTemperatureFeeCreateDTO;
 import com.fuj.fujitsuproject.entity.AirTemperatureFee;
 import com.fuj.fujitsuproject.entity.Vehicle;
 import com.fuj.fujitsuproject.entity.Weather;
+import com.fuj.fujitsuproject.exception.AirTemperatureFeeAlreadyInactiveException;
+import com.fuj.fujitsuproject.exception.OverlappingAirTemperatureFeesException;
 import com.fuj.fujitsuproject.exception.VehicleForbiddenException;
 import com.fuj.fujitsuproject.repository.AirTemperatureFeeRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -20,6 +24,57 @@ import java.util.Optional;
 public class AirTemperatureFeeService implements WeatherBasedFeeService{
 
     private final AirTemperatureFeeRepository airTemperatureFeeRepository;
+
+    private final VehicleService vehicleService;
+
+    public List<AirTemperatureFee> findALlAirTemperatureFees() {
+        return airTemperatureFeeRepository.findAll();
+    }
+
+    public void deactivateAirTemperatureFee(Long id) {
+
+        AirTemperatureFee airTemperatureFee = airTemperatureFeeRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Couldn't find " +
+                        "air temperature fee with id=" + id));
+
+        if (!airTemperatureFee.isActive()) throw new AirTemperatureFeeAlreadyInactiveException();
+
+        airTemperatureFee.setActive(false);
+        airTemperatureFee.setDeactivatedAt(LocalDateTime.now());
+
+        airTemperatureFeeRepository.save(airTemperatureFee);
+    }
+
+    public AirTemperatureFee createAirTemperatureFee(
+            AirTemperatureFeeCreateDTO airTemperatureFeeCreateDTO) {
+        log.info("dto " + airTemperatureFeeCreateDTO.toString());
+        Vehicle vehicle = vehicleService
+                .findVehicleById(airTemperatureFeeCreateDTO.getVehicleId());
+
+        BigDecimal minTemperature = airTemperatureFeeCreateDTO.getMinTemperature();
+        BigDecimal maxTemperature = airTemperatureFeeCreateDTO.getMaxTemperature();
+
+        List<AirTemperatureFee> overlappingAirTemperatureFees =
+                airTemperatureFeeRepository
+                        .findActiveAirTemperatureFeeWithOverlappingTemperatureRangeByVehicleId(
+                                minTemperature, maxTemperature, vehicle.getId());
+        log.info("overlap " + overlappingAirTemperatureFees.toString());
+
+        if (!overlappingAirTemperatureFees.isEmpty()) {
+            throw new OverlappingAirTemperatureFeesException(overlappingAirTemperatureFees);
+        }
+
+        AirTemperatureFee airTemperatureFee = new AirTemperatureFee();
+        airTemperatureFee.setMinTemperature(minTemperature);
+        airTemperatureFee.setMaxTemperature(maxTemperature);
+        airTemperatureFee.setVehicle(vehicle);
+        airTemperatureFee.setActive(true);
+        airTemperatureFee.setAmount(airTemperatureFeeCreateDTO.getAmount());
+        airTemperatureFee.setForbidden(airTemperatureFeeCreateDTO.isForbidden());
+
+        return airTemperatureFeeRepository.save(airTemperatureFee);
+    }
 
     private Optional<AirTemperatureFee> findAirTemperatureFeeByVehicleAndWeatherAndTime(
             Vehicle vehicle, Weather weather, LocalDateTime time) {
@@ -37,6 +92,7 @@ public class AirTemperatureFeeService implements WeatherBasedFeeService{
                         vehicle.getId(), weather.getAirTemperature());
     }
 
+    //тут используются методы репозитории а не сервиса. Исправить или так и оставить.
     @Override
     public BigDecimal calculateFee(Vehicle vehicle, Weather weather, Optional<LocalDateTime> time) {
 
