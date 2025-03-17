@@ -1,10 +1,12 @@
 package com.fuj.fujitsuproject.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import com.fuj.fujitsuproject.entity.City;
-import com.fuj.fujitsuproject.entity.Vehicle;
-import com.fuj.fujitsuproject.repository.CityRepository;
-import com.fuj.fujitsuproject.repository.VehicleRepository;
+
+import com.fuj.fujitsuproject.domain.regionalbasefee.RegionalBaseFeeService;
+import com.fuj.fujitsuproject.domain.city.City;
+import com.fuj.fujitsuproject.domain.vehicle.Vehicle;
+import com.fuj.fujitsuproject.domain.city.CityRepository;
+import com.fuj.fujitsuproject.domain.vehicle.VehicleRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;

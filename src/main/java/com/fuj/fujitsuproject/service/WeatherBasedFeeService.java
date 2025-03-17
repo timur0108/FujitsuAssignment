@@ -1,7 +1,7 @@
 package com.fuj.fujitsuproject.service;
 
-import com.fuj.fujitsuproject.entity.Vehicle;
-import com.fuj.fujitsuproject.entity.Weather;
+import com.fuj.fujitsuproject.domain.vehicle.Vehicle;
+import com.fuj.fujitsuproject.domain.weather.Weather;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

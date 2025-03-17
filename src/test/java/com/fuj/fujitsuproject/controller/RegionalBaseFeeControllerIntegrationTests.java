@@ -1,18 +1,16 @@
 package com.fuj.fujitsuproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fuj.fujitsuproject.DTO.RegionalBaseFeeCreateDTO;
-import com.fuj.fujitsuproject.entity.City;
-import com.fuj.fujitsuproject.entity.RegionalBaseFee;
-import com.fuj.fujitsuproject.entity.Vehicle;
-import com.fuj.fujitsuproject.repository.CityRepository;
-import com.fuj.fujitsuproject.repository.RegionalBaseFeeRepository;
-import com.fuj.fujitsuproject.repository.VehicleRepository;
+import com.fuj.fujitsuproject.domain.regionalbasefee.dto.RegionalBaseFeeCreateDTO;
+import com.fuj.fujitsuproject.domain.city.City;
+import com.fuj.fujitsuproject.domain.regionalbasefee.RegionalBaseFee;
+import com.fuj.fujitsuproject.domain.city.CityRepository;
+import com.fuj.fujitsuproject.domain.regionalbasefee.RegionalBaseFeeRepository;
+import com.fuj.fujitsuproject.domain.vehicle.VehicleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,7 +47,7 @@ public class RegionalBaseFeeControllerIntegrationTests {
         RegionalBaseFee fee = regionalBaseFeeRepository.findById(11L).orElseThrow();
         assertTrue(fee.isActive());
 
-        mockMvc.perform(patch("/api/rbf/" + 11 + "/deactivate")
+        mockMvc.perform(patch("/api/rbf/deactivate/" + 11)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

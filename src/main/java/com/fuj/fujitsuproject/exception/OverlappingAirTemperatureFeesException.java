@@ -1,6 +1,6 @@
 package com.fuj.fujitsuproject.exception;
 
-import com.fuj.fujitsuproject.entity.AirTemperatureFee;
+import com.fuj.fujitsuproject.domain.airtempfee.AirTemperatureFee;
 
 import java.util.List;
 

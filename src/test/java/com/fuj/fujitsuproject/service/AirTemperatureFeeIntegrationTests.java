@@ -1,8 +1,9 @@
 package com.fuj.fujitsuproject.service;
 
-import com.fuj.fujitsuproject.entity.Vehicle;
-import com.fuj.fujitsuproject.entity.Weather;
-import com.fuj.fujitsuproject.repository.VehicleRepository;
+import com.fuj.fujitsuproject.domain.airtempfee.AirTemperatureFeeService;
+import com.fuj.fujitsuproject.domain.vehicle.Vehicle;
+import com.fuj.fujitsuproject.domain.weather.Weather;
+import com.fuj.fujitsuproject.domain.vehicle.VehicleRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;

@@ -1,6 +1,6 @@
 package com.fuj.fujitsuproject.exception;
 
-import com.fuj.fujitsuproject.entity.WindSpeedFee;
+import com.fuj.fujitsuproject.domain.windspeedfee.WindSpeedFee;
 
 import java.util.List;
 
