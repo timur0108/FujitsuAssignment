@@ -1,10 +1,10 @@
 package com.fuj.fujitsuproject.service;
 
-import com.fuj.fujitsuproject.domain.weatherphenomenonfee.WeatherPhenomenonFeeService;
-import com.fuj.fujitsuproject.domain.vehicle.Vehicle;
-import com.fuj.fujitsuproject.domain.weather.Weather;
-import com.fuj.fujitsuproject.exception.VehicleForbiddenException;
-import com.fuj.fujitsuproject.domain.vehicle.VehicleRepository;
+import com.fuj.fujitsuproject.weatherphenomenonfee.WeatherPhenomenonFeeService;
+import com.fuj.fujitsuproject.vehicle.Vehicle;
+import com.fuj.fujitsuproject.weather.Weather;
+import com.fuj.fujitsuproject.shared.exception.VehicleForbiddenException;
+import com.fuj.fujitsuproject.vehicle.VehicleRepository;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;

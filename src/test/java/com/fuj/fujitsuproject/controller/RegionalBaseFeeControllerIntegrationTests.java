@@ -1,12 +1,12 @@
 package com.fuj.fujitsuproject.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fuj.fujitsuproject.domain.regionalbasefee.dto.RegionalBaseFeeCreateDTO;
-import com.fuj.fujitsuproject.domain.city.City;
-import com.fuj.fujitsuproject.domain.regionalbasefee.RegionalBaseFee;
-import com.fuj.fujitsuproject.domain.city.CityRepository;
-import com.fuj.fujitsuproject.domain.regionalbasefee.RegionalBaseFeeRepository;
-import com.fuj.fujitsuproject.domain.vehicle.VehicleRepository;
+import com.fuj.fujitsuproject.regionalbasefee.dto.RegionalBaseFeeCreateDTO;
+import com.fuj.fujitsuproject.city.City;
+import com.fuj.fujitsuproject.regionalbasefee.RegionalBaseFee;
+import com.fuj.fujitsuproject.city.CityRepository;
+import com.fuj.fujitsuproject.regionalbasefee.RegionalBaseFeeRepository;
+import com.fuj.fujitsuproject.vehicle.VehicleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

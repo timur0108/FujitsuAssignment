@@ -1,13 +1,13 @@
 package com.fuj.fujitsuproject.application;
 
-import com.fuj.fujitsuproject.domain.city.City;
-import com.fuj.fujitsuproject.domain.regionalbasefee.RegionalBaseFeeService;
-import com.fuj.fujitsuproject.domain.vehicle.Vehicle;
-import com.fuj.fujitsuproject.domain.weather.Weather;
-import com.fuj.fujitsuproject.domain.city.CityService;
-import com.fuj.fujitsuproject.domain.vehicle.VehicleService;
-import com.fuj.fujitsuproject.service.WeatherBasedFeeService;
-import com.fuj.fujitsuproject.domain.weather.WeatherService;
+import com.fuj.fujitsuproject.city.City;
+import com.fuj.fujitsuproject.regionalbasefee.RegionalBaseFeeService;
+import com.fuj.fujitsuproject.vehicle.Vehicle;
+import com.fuj.fujitsuproject.weather.Weather;
+import com.fuj.fujitsuproject.city.CityService;
+import com.fuj.fujitsuproject.vehicle.VehicleService;
+import com.fuj.fujitsuproject.shared.service.WeatherBasedFeeService;
+import com.fuj.fujitsuproject.weather.WeatherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,6 @@ public class FeeCalculationService {
         final Optional<LocalDateTime> timeToSearch = Optional.ofNullable(deliveryFeeCalculationDTO.getTime());
 
         BigDecimal totalFee = BigDecimal.ZERO;
-
         totalFee = totalFee.add(regionalBaseFeeService
                 .calculateFeeForVehicleAndCity(vehicle, city, timeToSearch));
         log.info("Regional base fee = {}", totalFee);

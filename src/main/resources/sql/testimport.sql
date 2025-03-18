@@ -38,6 +38,15 @@ VALUES
     ((SELECT id FROM vehicle WHERE name = 'bike'), -10.00, 0.00, 0.50, FALSE, TRUE),
     ((SELECT id FROM vehicle WHERE name = 'bike'), -999.99, -10.01, 1.00, FALSE, TRUE);
 
+INSERT INTO atef (vehicle_id, min_temperature, max_temperature, amount, forbidden, active, created_at, deactivated_at)
+VALUES
+    ((SELECT id FROM vehicle WHERE name = 'scooter'), -10.00, 0.00, 10, FALSE, FALSE, CURRENT_TIMESTAMP - INTERVAL '30' DAY, CURRENT_TIMESTAMP - INTERVAL '2' DAY),
+    ((SELECT id FROM vehicle WHERE name = 'scooter'), -999.99, -10.01, 15, FALSE, FALSE, CURRENT_TIMESTAMP - INTERVAL '60' DAY, CURRENT_TIMESTAMP - INTERVAL '2' DAY),
+    ((SELECT id FROM vehicle WHERE name = 'scooter'), -999.99, -10.01, 30, FALSE, FALSE, CURRENT_TIMESTAMP - INTERVAL '365' DAY, CURRENT_TIMESTAMP - INTERVAL '60' DAY),
+    ((SELECT id FROM vehicle WHERE name = 'bike'), -10.00, 0.00, 20, FALSE, FALSE, CURRENT_TIMESTAMP - INTERVAL '15' DAY, CURRENT_TIMESTAMP - INTERVAL '2' DAY),
+    ((SELECT id FROM vehicle WHERE name = 'bike'), -999.99, -10.01, 25, FALSE, FALSE, CURRENT_TIMESTAMP - INTERVAL '45' DAY, CURRENT_TIMESTAMP - INTERVAL '2' DAY);
+
+
 INSERT INTO wsef (vehicle_id, min_speed, max_speed, amount, forbidden, active)
 VALUES
     ((SELECT id FROM vehicle WHERE name = 'bike'), 10.00, 20.00, 0.50, FALSE, TRUE),

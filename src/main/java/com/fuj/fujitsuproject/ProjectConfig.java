@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @EnableFeignClients(
-        basePackages = "com.fuj.fujitsuproject.domain.weather"
+        basePackages = "com.fuj.fujitsuproject.weather"
 )
 public class ProjectConfig {
 

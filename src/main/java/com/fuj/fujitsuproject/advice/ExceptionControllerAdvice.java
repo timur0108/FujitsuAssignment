@@ -1,7 +1,7 @@
 package com.fuj.fujitsuproject.advice;
 
-import com.fuj.fujitsuproject.DTO.ErrorDetails;
-import com.fuj.fujitsuproject.exception.*;
+import com.fuj.fujitsuproject.shared.exception.ErrorDetails;
+import com.fuj.fujitsuproject.shared.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
