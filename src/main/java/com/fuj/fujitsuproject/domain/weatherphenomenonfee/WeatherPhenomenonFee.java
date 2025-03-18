@@ -2,6 +2,7 @@ package com.fuj.fujitsuproject.domain.weatherphenomenonfee;
 
 import com.fuj.fujitsuproject.domain.vehicle.Vehicle;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertTrue;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -39,4 +40,9 @@ public class WeatherPhenomenonFee {
 
     @Column(name = "deactivated_at")
     private LocalDateTime deactivatedAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.createdAt == null) this.createdAt = LocalDateTime.now();
+    }
 }

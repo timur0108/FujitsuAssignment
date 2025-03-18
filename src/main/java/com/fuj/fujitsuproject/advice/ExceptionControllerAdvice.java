@@ -107,4 +107,15 @@ public class ExceptionControllerAdvice {
                 .badRequest()
                 .body(errorDetails);
     }
+
+    @ExceptionHandler(OverlappingWeatherPhenomenon.class)
+    public ResponseEntity<ErrorDetails> exceptionOverlappingWeatherPhenomenonHandler(
+            OverlappingWeatherPhenomenon e) {
+
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setMessage(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(errorDetails);
+    }
 }

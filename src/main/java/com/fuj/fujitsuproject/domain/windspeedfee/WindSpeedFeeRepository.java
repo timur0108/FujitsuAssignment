@@ -1,5 +1,7 @@
 package com.fuj.fujitsuproject.domain.windspeedfee;
 
+import com.fuj.fujitsuproject.domain.airtempfee.AirTemperatureFee;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,4 +51,7 @@ public interface WindSpeedFeeRepository extends JpaRepository<WindSpeedFee, Long
     List<WindSpeedFee> findActiveWindSpeedFeesWithOverlappingSpeedRangeByVehicleId(
             @Param("minSpeed") BigDecimal minSpeed, @Param("maxSpeed") BigDecimal maxSpeed,
             @Param("vehicleId") Long vehicleId);
+
+    @EntityGraph(attributePaths = {"vehicle"})
+    List<WindSpeedFee> findAll();
 }
