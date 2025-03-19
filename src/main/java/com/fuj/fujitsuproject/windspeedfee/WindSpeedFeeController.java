@@ -33,7 +33,7 @@ public class WindSpeedFeeController {
 
     @PatchMapping("/deactivate/{id}")
     public ResponseEntity<Void> deactivateWindSPeedFee(@PathVariable Long id) {
-        windSpeedFeeService.deactivateWindSpeedFee(id);
+        windSpeedFeeService.deactivateFee(id);
         return ResponseEntity.ok().build();
     }
 }

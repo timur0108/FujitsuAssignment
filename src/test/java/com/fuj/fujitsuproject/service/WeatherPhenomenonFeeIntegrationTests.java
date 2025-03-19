@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,7 +51,10 @@ public class WeatherPhenomenonFeeIntegrationTests {
             "Glaze storm, scooter, 0, VehicleForbiddenException",
             "Hailstorm, scooter, 0, VehicleForbiddenException",
             "Thunderclap, scooter, 0, VehicleForbiddenException",
-            "thunder, car, 0, NONE"
+            "thunder, car, 0, NONE",
+            "Stormy sky, bike, 0, NONE",
+            "Thunderstorm, bike, 0, VehicleForbiddenException",
+            "Thunder, bike, 0, VehicleForbiddenException",
     })
     public void testWeatherPhenomenonFeeCalculation(String weatherPhenomenon, String vehicleName,
                                                     BigDecimal expectedFee, String expectedException) {
@@ -74,5 +78,37 @@ public class WeatherPhenomenonFeeIntegrationTests {
                 .orElseThrow(() -> new RuntimeException());
 
         return weatherPhenomenonFeeService.calculateFee(vehicle, weather, Optional.ofNullable(null));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            "Foggy weather, bike, 15, NONE, 2023-12-01T12:00:00",
+            "Light mist, bike, 30, NONE, 2024-02-01T12:00:00",
+            "Stormy sky, bike, 0, VehicleForbiddenException, 2023-08-01T12:00:00",
+            "Thunderstorm, scooter, 20, NONE, 2023-10-01T12:00:00",
+    })
+    public void testWeatherPhenomenonFeeCalculationWithTime(String weatherPhenomenon, String vehicleName,
+                                                    BigDecimal expectedFee, String expectedException,
+                                                            LocalDateTime time) {
+
+        if ("VehicleForbiddenException".equals(expectedException)) {
+            assertThrows(VehicleForbiddenException.class, () -> runTestWithTime(weatherPhenomenon, vehicleName, time));
+        } else {
+            BigDecimal feeAmount = runTestWithTime(weatherPhenomenon, vehicleName, time);
+            assertNotNull(feeAmount);
+            assertTrue(feeAmount.compareTo(expectedFee) == 0);
+        }
+    }
+
+    private BigDecimal runTestWithTime(String weatherPhenomenon, String vehicleName, LocalDateTime time) {
+
+        Weather weather = new Weather();
+        weather.setWeatherPhenomenon(weatherPhenomenon);
+
+        Vehicle vehicle = vehicleRepository
+                .findByNameEqualsIgnoreCase(vehicleName)
+                .orElseThrow(() -> new RuntimeException());
+
+        return weatherPhenomenonFeeService.calculateFee(vehicle, weather, Optional.ofNullable(time));
     }
 }

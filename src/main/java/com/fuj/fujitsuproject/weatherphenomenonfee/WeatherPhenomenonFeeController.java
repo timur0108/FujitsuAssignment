@@ -24,7 +24,7 @@ public class WeatherPhenomenonFeeController {
 
     @PatchMapping("/deactivate/{id}")
     public ResponseEntity<Void> deactivateWeatherPhenomenonFee(@PathVariable Long id) {
-        weatherPhenomenonFeeService.deactivateWeatherPhenomenonFee(id);
+        weatherPhenomenonFeeService.deactivateFee(id);
         return ResponseEntity.ok().build();
     }
 

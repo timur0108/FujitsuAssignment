@@ -1,47 +1,45 @@
 package com.fuj.fujitsuproject.weatherphenomenonfee;
 
+import com.fuj.fujitsuproject.shared.service.VehicleAndWeatherBasedFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.vehicle.VehicleService;
 import com.fuj.fujitsuproject.weather.Weather;
-import com.fuj.fujitsuproject.shared.exception.FeeAlreadyInactiveException;
 import com.fuj.fujitsuproject.shared.exception.OverlappingWeatherPhenomenon;
-import com.fuj.fujitsuproject.shared.exception.VehicleForbiddenException;
-import com.fuj.fujitsuproject.shared.service.WeatherBasedFeeService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
-public class WeatherPhenomenonFeeService implements WeatherBasedFeeService {
+public class WeatherPhenomenonFeeService extends VehicleAndWeatherBasedFeeService<WeatherPhenomenonFee, WeatherPhenomenonFeeRepository> {
 
-    private final WeatherPhenomenonFeeRepository weatherPhenomenonFeeRepository;
-    private final VehicleService vehicleService;
+    protected final VehicleService vehicleService;
 
-    private Optional<WeatherPhenomenonFee> findWpefByVehicleAndWeatherAndTime(
+    public WeatherPhenomenonFeeService(WeatherPhenomenonFeeRepository weatherPhenomenonFeeRepository,
+                                       VehicleService vehicleService) {
+        super(weatherPhenomenonFeeRepository);
+        this.vehicleService = vehicleService;
+    }
+
+    protected Optional<WeatherPhenomenonFee> findFeeByVehicleAndWeatherAndTime(
             Vehicle vehicle, Weather weather, LocalDateTime time) {
 
-        return weatherPhenomenonFeeRepository
+        return repository
                 .findWeatherPhenomenonFeeByVehicleIdAndPhenomenonAndTime(
                         vehicle.getId(), weather.getWeatherPhenomenon().toLowerCase(), time);
     }
 
-    private Optional<WeatherPhenomenonFee> findLatestWpefByVehicleAndWeather(Vehicle vehicle, Weather weather) {
+    protected Optional<WeatherPhenomenonFee> findActiveFeeByVehicleAndWeather(Vehicle vehicle, Weather weather) {
         log.info("weather phenomenon=" + weather.getWeatherPhenomenon());
-        return weatherPhenomenonFeeRepository
+        return repository
                 .findLatestWeatherPhenomenonFeeByVehicleIdAndPhenomenon(vehicle.getId(), weather.getWeatherPhenomenon().toLowerCase());
     }
 
     public List<WeatherPhenomenonFee> findAllFees() {
-        return weatherPhenomenonFeeRepository.findAll();
+        return repository.findAll();
     }
 
     public WeatherPhenomenonFee createWeatherPhenomenonFee(
@@ -52,9 +50,10 @@ public class WeatherPhenomenonFeeService implements WeatherBasedFeeService {
 
         String phenomenon = weatherPhenomenonFeeCreateDTO.getPhenomenon();
 
+        //поиск по транспорту ещё должен быть
         Optional<WeatherPhenomenonFee> existingWeatherPhenomenonFee =
-                weatherPhenomenonFeeRepository
-                        .findWeatherPhenomenonFeeByPhenomenonAndActiveTrue(phenomenon);
+                repository
+                        .findWeatherPhenomenonFeeByPhenomenonAndVehicleIdAndActiveTrue(phenomenon, vehicle.getId());
 
         if (existingWeatherPhenomenonFee.isPresent()) throw new OverlappingWeatherPhenomenon(phenomenon);
 
@@ -65,39 +64,7 @@ public class WeatherPhenomenonFeeService implements WeatherBasedFeeService {
         weatherPhenomenonFee.setVehicle(vehicle);
         weatherPhenomenonFee.setActive(true);
 
-        return weatherPhenomenonFeeRepository.save(weatherPhenomenonFee);
+        return repository.save(weatherPhenomenonFee);
     }
 
-    @Transactional
-    public void deactivateWeatherPhenomenonFee(Long id) {
-
-        WeatherPhenomenonFee weatherPhenomenonFee = weatherPhenomenonFeeRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("" +
-                        "Couldn't find weather phenomenon fee."));
-
-        if (!weatherPhenomenonFee.isActive()) throw new FeeAlreadyInactiveException();
-
-        weatherPhenomenonFee.setActive(false);
-        weatherPhenomenonFee.setDeactivatedAt(LocalDateTime.now());
-
-        weatherPhenomenonFeeRepository.save(weatherPhenomenonFee);
-    }
-
-    @Override
-    public BigDecimal calculateFee(Vehicle vehicle, Weather weather, Optional<LocalDateTime> time) {
-        Optional<WeatherPhenomenonFee> weatherPhenomenonFeeOptional;
-
-        if (time.isPresent()) weatherPhenomenonFeeOptional = findWpefByVehicleAndWeatherAndTime(
-                vehicle, weather, time.get());
-        else weatherPhenomenonFeeOptional = findLatestWpefByVehicleAndWeather(vehicle, weather);
-
-        if (weatherPhenomenonFeeOptional.isEmpty()) return BigDecimal.ZERO;
-
-        WeatherPhenomenonFee weatherPhenomenonFee = weatherPhenomenonFeeOptional.get();
-        if (weatherPhenomenonFee.isForbidden()) throw new VehicleForbiddenException();
-
-        log.info("phenomenon fee=" + weatherPhenomenonFee.getAmount().toString());
-        return weatherPhenomenonFee.getAmount();
-    }
 }

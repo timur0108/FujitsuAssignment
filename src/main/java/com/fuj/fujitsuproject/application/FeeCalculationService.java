@@ -2,11 +2,11 @@ package com.fuj.fujitsuproject.application;
 
 import com.fuj.fujitsuproject.city.City;
 import com.fuj.fujitsuproject.regionalbasefee.RegionalBaseFeeService;
+import com.fuj.fujitsuproject.shared.service.VehicleAndWeatherBasedFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.weather.Weather;
 import com.fuj.fujitsuproject.city.CityService;
 import com.fuj.fujitsuproject.vehicle.VehicleService;
-import com.fuj.fujitsuproject.shared.service.WeatherBasedFeeService;
 import com.fuj.fujitsuproject.weather.WeatherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FeeCalculationService {
 
-    private final List<WeatherBasedFeeService> weatherBasedFeeServices;
+    private final List<VehicleAndWeatherBasedFeeService> vehicleAndWeatherBasedFeeServices;
     private final CityService cityService;
     private final VehicleService vehicleService;
     private final RegionalBaseFeeService regionalBaseFeeService;
@@ -31,7 +31,8 @@ public class FeeCalculationService {
     public BigDecimal calculateDeliveryFee(DeliveryFeeCalculationDTO deliveryFeeCalculationDTO) {
 
         log.info("Calculating delivery fee for {}", deliveryFeeCalculationDTO);
-
+        System.out.println("gvg");
+        System.out.println(vehicleAndWeatherBasedFeeServices);
         String cityName = deliveryFeeCalculationDTO.getCity();
         City city = cityService.findCityByName(cityName);
 
@@ -47,7 +48,7 @@ public class FeeCalculationService {
 
         Weather weather = weatherService.findWeatherByCityAndTime(city, timeToSearch);
 
-        totalFee = weatherBasedFeeServices
+        totalFee = vehicleAndWeatherBasedFeeServices
                 .stream()
                 .map(service -> service.calculateFee(vehicle, weather, timeToSearch))
                 .reduce(totalFee, BigDecimal::add);

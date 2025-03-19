@@ -13,8 +13,6 @@ public class WeatherPhenomenonFeeCreateDTO {
     @NotNull(message = "vehicle id can't be null")
     private Long vehicleId;
 
-    @NotNull(message = "phenomenon can't be null")
-
     @NotBlank(message = "phenomenon can't be empty")
     @NotNull(message = "phenomenon can't be null")
     private String phenomenon;

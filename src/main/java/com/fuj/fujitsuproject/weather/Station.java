@@ -1,4 +1,4 @@
-package com.fuj.fujitsuproject.model;
+package com.fuj.fujitsuproject.weather;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import lombok.Data;

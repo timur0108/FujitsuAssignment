@@ -52,6 +52,15 @@ VALUES
     ((SELECT id FROM vehicle WHERE name = 'bike'), 10.00, 20.00, 0.50, FALSE, TRUE),
     ((SELECT id FROM vehicle WHERE name = 'bike'), 20.01, 999.99, NULL, TRUE, TRUE);
 
+INSERT INTO wsef (vehicle_id, min_speed, max_speed, amount, forbidden, created_at, active, deactivated_at)
+VALUES
+    ((SELECT id FROM vehicle WHERE name = 'bike'), 5.00, 9.99, 10, FALSE, '2024-03-15 12:00:00', FALSE, '2024-06-20 15:30:00'),
+    ((SELECT id FROM vehicle WHERE name = 'bike'), 10.00, 15.00, 15, FALSE, '2023-08-10 08:00:00', FALSE, '2023-12-01 10:45:00'),
+    ((SELECT id FROM vehicle WHERE name = 'bike'), 10.00, 20.00, 30, FALSE, '2023-07-10 08:00:00', FALSE, '2023-08-09 10:45:00'),
+    ((SELECT id FROM vehicle WHERE name = 'bike'), 10.00, 20.00, NULL, TRUE, '2023-05-10 08:00:00', FALSE, '2023-07-09 10:45:00'),
+    ((SELECT id FROM vehicle WHERE name = 'scooter'), 5.00, 15.00, 20, FALSE, '2024-05-01 09:30:00', FALSE, '2024-07-10 14:45:00'),
+    ((SELECT id FROM vehicle WHERE name = 'scooter'), 15.01, 40.00, 25, TRUE, '2023-04-18 16:50:00', FALSE, '2023-10-20 08:30:00');
+
 INSERT INTO wpef (amount, phenomenon, forbidden, vehicle_id, active)
 VALUES
     (1.00, 'snow', FALSE, (SELECT id FROM vehicle WHERE name = 'scooter'), TRUE),
@@ -66,3 +75,10 @@ VALUES
     (NULL, 'glaze', TRUE, (SELECT id FROM vehicle WHERE name = 'bike'), TRUE),
     (NULL, 'hail', TRUE, (SELECT id FROM vehicle WHERE name = 'bike'), TRUE),
     (NULL, 'thunder', TRUE, (SELECT id FROM vehicle WHERE name = 'bike'), TRUE);
+
+INSERT INTO wpef (amount, phenomenon, forbidden, vehicle_id, created_at, active, deactivated_at)
+VALUES
+    (15, 'fog', FALSE, (SELECT id FROM vehicle WHERE name = 'bike'), '2023-11-05 10:30:00', FALSE, '2024-02-20 12:00:00'),
+    (30, 'mist', FALSE, (SELECT id FROM vehicle WHERE name = 'bike'), '2024-01-10 14:15:00', FALSE, '2024-03-01 18:45:00'),
+    (NULL, 'storm', TRUE, (SELECT id FROM vehicle WHERE name = 'bike'), '2023-07-22 08:45:00', FALSE, '2023-10-15 09:30:00'),
+    (20, 'thunder', FALSE, (SELECT id FROM vehicle WHERE name = 'scooter'), '2023-09-18 07:20:00', FALSE, '2023-12-05 16:10:00');

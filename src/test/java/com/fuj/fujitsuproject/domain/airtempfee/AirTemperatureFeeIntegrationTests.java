@@ -71,7 +71,7 @@ public class AirTemperatureFeeIntegrationTests {
             "-15, bike, 25, 2025-03-10T12:00:00",
             "-15, bike, 0, 2024-03-10T12:00:00",
     })
-    public void testAirTEmperatureFeeCalculationWithDate(
+    public void testAirTemperatureFeeCalculationWithDate(
             BigDecimal temperature, String vehicleName,
             BigDecimal expectedFee, LocalDateTime time
     ) {

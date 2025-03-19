@@ -1,7 +1,6 @@
 package com.fuj.fujitsuproject.weather;
 
 import com.fuj.fujitsuproject.ProjectConfig;
-import com.fuj.fujitsuproject.model.Observations;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

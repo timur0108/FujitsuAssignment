@@ -37,8 +37,8 @@ public interface WeatherPhenomenonFeeRepository extends JpaRepository<WeatherPhe
     Optional<WeatherPhenomenonFee> findLatestWeatherPhenomenonFeeByVehicleIdAndPhenomenon(
             @Param("vehicleId") Long vehicleId, @Param("weatherPhenomenon") String weatherPhenomenon);
 
-    Optional<WeatherPhenomenonFee> findWeatherPhenomenonFeeByPhenomenonAndActiveTrue(
-            String phenomenon);
+    Optional<WeatherPhenomenonFee> findWeatherPhenomenonFeeByPhenomenonAndVehicleIdAndActiveTrue(
+            String phenomenon, Long vehicleId);
 
     @EntityGraph(attributePaths = {"vehicle"})
     List<WeatherPhenomenonFee> findAll();

@@ -1,15 +1,11 @@
 package com.fuj.fujitsuproject.windspeedfee;
 
+import com.fuj.fujitsuproject.shared.service.VehicleAndWeatherBasedFeeService;
 import com.fuj.fujitsuproject.windspeedfee.dto.WindSpeedFeeCreateDTO;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.weather.Weather;
-import com.fuj.fujitsuproject.shared.exception.FeeAlreadyInactiveException;
 import com.fuj.fujitsuproject.shared.exception.OverlappingWindSpeedFeeException;
-import com.fuj.fujitsuproject.shared.exception.VehicleForbiddenException;
 import com.fuj.fujitsuproject.vehicle.VehicleService;
-import com.fuj.fujitsuproject.shared.service.WeatherBasedFeeService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,18 +14,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Service
 @Slf4j
-public class WindSpeedFeeService implements WeatherBasedFeeService {
-
-    private final WindSpeedFeeRepository windSpeedFeeRepository;
+public class WindSpeedFeeService extends VehicleAndWeatherBasedFeeService<WindSpeedFee, WindSpeedFeeRepository> {
 
     private final VehicleService vehicleService;
 
-    public List<WindSpeedFee> findAllWindSpeedFees() {
+    public WindSpeedFeeService(WindSpeedFeeRepository windSpeedFeeRepository, VehicleService vehicleService) {
+        super(windSpeedFeeRepository);
+        this.vehicleService = vehicleService;
+    }
 
-        return windSpeedFeeRepository.findAll();
+    public List<WindSpeedFee> findAllWindSpeedFees() {
+        return repository.findAll();
     }
 
     public WindSpeedFee createWindSpeedFee(WindSpeedFeeCreateDTO windSpeedFeeCreateDTO) {
@@ -40,7 +37,7 @@ public class WindSpeedFeeService implements WeatherBasedFeeService {
         BigDecimal minSpeed = windSpeedFeeCreateDTO.getMinSpeed();
         BigDecimal maxSpeed = windSpeedFeeCreateDTO.getMaxSpeed();
 
-        List<WindSpeedFee> overlappingWindSpeedFees = windSpeedFeeRepository
+        List<WindSpeedFee> overlappingWindSpeedFees = repository
                 .findActiveWindSpeedFeesWithOverlappingSpeedRangeByVehicleId(
                        minSpeed, maxSpeed, vehicle.getId());
 
@@ -54,55 +51,24 @@ public class WindSpeedFeeService implements WeatherBasedFeeService {
         windSpeedFee.setVehicle(vehicle);
         windSpeedFee.setActive(true);
 
-        return windSpeedFeeRepository.save(windSpeedFee);
+        return repository.save(windSpeedFee);
     }
 
-    private Optional<WindSpeedFee> findWsefByVehicleAndWeatherAndTime(
+    protected Optional<WindSpeedFee> findFeeByVehicleAndWeatherAndTime(
             Vehicle vehicle, Weather weather, LocalDateTime time) {
 
-        return windSpeedFeeRepository
+        return repository
                 .findWindSpeedFeeByVehicleIdAndWindSpeedAndTime(
                         vehicle.getId(), weather.getWindSpeed(), time);
     }
 
-    private Optional<WindSpeedFee> findLatestWsefByVehicleAndWeather(
+    protected Optional<WindSpeedFee> findActiveFeeByVehicleAndWeather(
             Vehicle vehicle, Weather weather) {
 
-        return windSpeedFeeRepository
+        return repository
                 .findLatestActiveWindSpeedFeeByVehicleIdAndSpeed(
                         vehicle.getId(), weather.getWindSpeed());
 
     }
 
-    @Override
-    public BigDecimal calculateFee(Vehicle vehicle, Weather weather, Optional<LocalDateTime> time) {
-
-        Optional<WindSpeedFee> windSpeedFeeOptional;
-
-        if (time.isPresent()) windSpeedFeeOptional = findWsefByVehicleAndWeatherAndTime(vehicle, weather, time.get());
-        else windSpeedFeeOptional = findLatestWsefByVehicleAndWeather(vehicle, weather);
-
-        if (windSpeedFeeOptional.isEmpty()) return BigDecimal.ZERO;
-
-        WindSpeedFee fee = windSpeedFeeOptional.get();
-        if (fee.isForbidden()) throw new VehicleForbiddenException();
-
-        log.info("wind speed fee=" + fee.getAmount().toString());
-        return fee.getAmount();
-    }
-
-    public void deactivateWindSpeedFee(Long id) {
-
-        WindSpeedFee windSpeedFee = windSpeedFeeRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("" +
-                        "Couldn't find wind speed fee"));
-
-        if (!windSpeedFee.isActive()) throw new FeeAlreadyInactiveException();
-
-        windSpeedFee.setActive(false);
-        windSpeedFee.setDeactivatedAt(LocalDateTime.now());
-
-        windSpeedFeeRepository.save(windSpeedFee);
-    }
 }

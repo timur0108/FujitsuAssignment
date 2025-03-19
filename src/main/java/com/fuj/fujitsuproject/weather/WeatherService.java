@@ -2,7 +2,6 @@ package com.fuj.fujitsuproject.weather;
 
 import com.fuj.fujitsuproject.city.City;
 import com.fuj.fujitsuproject.city.CityService;
-import com.fuj.fujitsuproject.model.Observations;
 import com.fuj.fujitsuproject.shared.utils.TimeUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
