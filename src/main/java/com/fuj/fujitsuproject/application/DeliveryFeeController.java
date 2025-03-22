@@ -13,15 +13,22 @@ import java.math.BigDecimal;
 @RequestMapping("api/fee/calculate")
 public class DeliveryFeeController {
 
-    private final FeeCalculationService feeCalculationService;
+    private final DeliveryFeeCalculationService deliveryFeeCalculationService;
 
+    /**
+     * Controller that accepts dto containing city and vehicle and time if provided
+     * to calculate delivery fee.
+     * @param deliveryFeeCalculationDTO DTO containing all needed information to calculate
+     *                                  delivery fee.
+     * @return returns ResponseEntity containing BigDecimal of calculated delivery fee.
+     */
     @PostMapping
     public ResponseEntity<BigDecimal> calculateDeliveryFee(
             @RequestBody DeliveryFeeCalculationDTO deliveryFeeCalculationDTO) {
 
         log.info("Arrived POST request to calculate delivery fee.");
         return ResponseEntity.ok(
-                feeCalculationService.calculateDeliveryFee(deliveryFeeCalculationDTO)
+                deliveryFeeCalculationService.calculateDeliveryFee(deliveryFeeCalculationDTO)
         );
     }
 }

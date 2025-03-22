@@ -1,6 +1,5 @@
 package com.fuj.fujitsuproject.regionalbasefee;
 
-import com.fuj.fujitsuproject.regionalbasefee.dto.RegionalBaseFeeCreateDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,14 +15,31 @@ public class RegionalBaseFeeController {
 
     private final RegionalBaseFeeService regionalBaseFeeService;
 
+    /**
+     * /**
+     * Retrieves all regional base fees by calling the service layer.
+     * @param activeOnly if activeOnly equals true retrieves only those fees
+     *                   that are currently active.
+     * @return ResponseEntity containing all found regional base fees.
+     */
     @GetMapping("/all")
-    public ResponseEntity<List<RegionalBaseFee>> getAllRegionalBaseFees() {
-
+    public ResponseEntity<List<RegionalBaseFee>> getAllRegionalBaseFees(
+            @RequestParam(required = false, defaultValue = "false") boolean activeOnly
+    ) {
         return ResponseEntity
                 .ok()
-                .body(regionalBaseFeeService.findALlRegionalBaseFees());
+                .body(regionalBaseFeeService.findALlRegionalBaseFees(activeOnly));
     }
 
+    /**
+     * Handles POST request to add a new regional base fee.
+     * Accepts a request body containing the data for a new regional base fee and
+     * calls service layer to process this data.
+     * @param regionalBaseFeeCreateDTO the data transfer object containing the details
+     *                                 for the new regional base fee.
+     * @return a ResponseEntity containing the newly created regional base fee
+     * with an HTTP status of CREATED.
+     */
     @PostMapping
     public ResponseEntity<RegionalBaseFee> addRegionalBaseFee(
             @RequestBody @Valid RegionalBaseFeeCreateDTO regionalBaseFeeCreateDTO) {
@@ -31,11 +47,4 @@ public class RegionalBaseFeeController {
         return new ResponseEntity<>(regionalBaseFeeService.addRegionalBaseFee(regionalBaseFeeCreateDTO), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/deactivate/{id}")
-    public ResponseEntity<Void> deactivateRegionalBaseFee(@PathVariable Long id) {
-
-        regionalBaseFeeService.deactivateRegionalBaseFee(id);
-
-        return ResponseEntity.ok().build();
-    }
 }

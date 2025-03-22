@@ -1,5 +1,6 @@
 package com.fuj.fujitsuproject.windspeedfee;
 
+import com.fuj.fujitsuproject.shared.repository.VehicleAndWeatherBasedFeeRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface WindSpeedFeeRepository extends JpaRepository<WindSpeedFee, Long> {
+public interface WindSpeedFeeRepository extends VehicleAndWeatherBasedFeeRepository<WindSpeedFee> {
 
     @Query(value = """
     SELECT * FROM wsef
@@ -53,4 +54,7 @@ public interface WindSpeedFeeRepository extends JpaRepository<WindSpeedFee, Long
 
     @EntityGraph(attributePaths = {"vehicle"})
     List<WindSpeedFee> findAll();
+
+    @EntityGraph(attributePaths = {"vehicle"})
+    List<WindSpeedFee> findAllByActiveTrue();
 }

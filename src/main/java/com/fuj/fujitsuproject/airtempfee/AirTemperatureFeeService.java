@@ -13,23 +13,33 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing AirTemperatureFee entities.
+ * This class extends {@link VehicleAndWeatherBasedFeeService}.
+ */
 @Slf4j
 @Service
 public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<AirTemperatureFee, AirTemperatureFeeRepository> {
 
     private final VehicleService vehicleService;
+    private final AirTemperatureFeeMapper mapper;
 
-    public AirTemperatureFeeService(AirTemperatureFeeRepository repository, VehicleService vehicleService) {
+    public AirTemperatureFeeService(AirTemperatureFeeRepository repository, VehicleService vehicleService,
+                                    AirTemperatureFeeMapper mapper) {
         super(repository);
         this.vehicleService = vehicleService;
+        this.mapper = mapper;
     }
 
-    public List<AirTemperatureFee> findALlAirTemperatureFees() {
-        return repository.findAll();
-    }
 
-    public AirTemperatureFee createAirTemperatureFee(
-            AirTemperatureFeeCreateDTO airTemperatureFeeCreateDTO) {
+    /**
+     * Creates a new AirTemperatureFee based on the provided DTO.
+     * This method checks for overlapping temperature ranges before creating the fee.
+     * @param airTemperatureFeeCreateDTO The DTO containing the data to create a new AirTemperatureFee.
+     * @return created AirTemperatureFee entity.
+     */
+    public AirTemperatureFee createAirTemperatureFee(AirTemperatureFeeCreateDTO airTemperatureFeeCreateDTO) {
+
         log.info("dto " + airTemperatureFeeCreateDTO.toString());
         Vehicle vehicle = vehicleService
                 .findVehicleById(airTemperatureFeeCreateDTO.getVehicleId());
@@ -37,27 +47,35 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
         BigDecimal minTemperature = airTemperatureFeeCreateDTO.getMinTemperature();
         BigDecimal maxTemperature = airTemperatureFeeCreateDTO.getMaxTemperature();
 
-        List<AirTemperatureFee> overlappingAirTemperatureFees =
-                repository
-                        .findActiveAirTemperatureFeeWithOverlappingTemperatureRangeByVehicleId(
-                                minTemperature, maxTemperature, vehicle.getId());
-        log.info("overlap " + overlappingAirTemperatureFees.toString());
+        checkForOverlappingFees(vehicle, minTemperature, maxTemperature);
 
-        if (!overlappingAirTemperatureFees.isEmpty()) {
-            throw new OverlappingAirTemperatureFeesException(overlappingAirTemperatureFees);
-        }
-
-        AirTemperatureFee airTemperatureFee = new AirTemperatureFee();
-        airTemperatureFee.setMinTemperature(minTemperature);
-        airTemperatureFee.setMaxTemperature(maxTemperature);
-        airTemperatureFee.setVehicle(vehicle);
-        airTemperatureFee.setActive(true);
-        airTemperatureFee.setAmount(airTemperatureFeeCreateDTO.getAmount());
-        airTemperatureFee.setForbidden(airTemperatureFeeCreateDTO.isForbidden());
-
+        AirTemperatureFee airTemperatureFee = mapper.toAirTemperatureFee(airTemperatureFeeCreateDTO, vehicle);
         return repository.save(airTemperatureFee);
     }
 
+    /**
+     * Checks for any overlapping temperature range fees for the given vehicle.
+     * Throws an exception if any overlapping fees are found.
+     * @param vehicle The vehicle for which the overlapping fees should be checked.
+     * @param minTemperature The minimum temperature for the fee range.
+     * @param maxTemperature The maximum temperature for the fee range.
+     */
+    private void checkForOverlappingFees(Vehicle vehicle, BigDecimal minTemperature, BigDecimal maxTemperature) {
+        List<AirTemperatureFee> overlappingAirTemperatureFees = repository
+                .findActiveAirTemperatureFeeWithOverlappingTemperatureRangeByVehicleId(
+                                minTemperature, maxTemperature, vehicle.getId());
+        if (!overlappingAirTemperatureFees.isEmpty()) {
+            throw new OverlappingAirTemperatureFeesException(overlappingAirTemperatureFees);
+        }
+    }
+
+    /**
+     * Implementation of abstract method of superclass
+     * @param vehicle the vehicle to find fee for.
+     * @param weather the weather to find fee for.
+     * @param time the specific time for which the fee is to be found.
+     * @return
+     */
     protected Optional<AirTemperatureFee> findFeeByVehicleAndWeatherAndTime(
             Vehicle vehicle, Weather weather, LocalDateTime time) {
 
@@ -66,6 +84,12 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
                         vehicle.getId(), weather.getAirTemperature(), time);
     }
 
+    /**
+     * Implementation of abstract method of superclass
+     * @param vehicle the vehicle to find fee for
+     * @param weather the weather to find fee for
+     * @return
+     */
     protected Optional<AirTemperatureFee> findActiveFeeByVehicleAndWeather(
             Vehicle vehicle, Weather weather) {
 

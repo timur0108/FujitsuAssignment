@@ -1,6 +1,5 @@
-package com.fuj.fujitsuproject.service;
+package com.fuj.fujitsuproject.weatherphenomenonfee;
 
-import com.fuj.fujitsuproject.weatherphenomenonfee.WeatherPhenomenonFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.weather.Weather;
 import com.fuj.fujitsuproject.shared.exception.VehicleForbiddenException;

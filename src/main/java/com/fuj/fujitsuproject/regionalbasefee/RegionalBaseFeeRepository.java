@@ -27,18 +27,11 @@ public interface RegionalBaseFeeRepository extends JpaRepository<RegionalBaseFee
             @Param("cityId") Long cityId, @Param("vehicleId") Long vehicleId,
             @Param("time")LocalDateTime time);
 
-    @Query(value = """
-    SELECT * FROM rbf
-    WHERE vehicle_id = :vehicleId
-    AND city_id = :cityId
-    AND active = true
-    ORDER BY created_at DESC
-    LIMIT 1""", nativeQuery = true)
-    Optional<RegionalBaseFee> findLatestActiveRbfByCityIdAndVehicleId(
-            @Param("cityId") Long cityId, @Param("vehicleId") Long vehicleId);
-
     @EntityGraph(attributePaths = {"city", "vehicle"})
     List<RegionalBaseFee> findAll();
 
-    Optional<RegionalBaseFee> findByVehicleAndCityAndActiveTrue(Vehicle vehicle, City city);
+    @EntityGraph(attributePaths = {"city", "vehicle"})
+    List<RegionalBaseFee> findAllByActiveTrue();
+
+    Optional<RegionalBaseFee> findByVehicleIdAndCityIdAndActiveTrue(Long vehicleId, Long cityId);
 }

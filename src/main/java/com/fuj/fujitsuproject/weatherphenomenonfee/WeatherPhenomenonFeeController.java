@@ -16,10 +16,12 @@ public class WeatherPhenomenonFeeController {
     private final WeatherPhenomenonFeeService weatherPhenomenonFeeService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<WeatherPhenomenonFee>> getAllWeatherPhenomenonFees() {
+    public ResponseEntity<List<WeatherPhenomenonFee>> getAllWeatherPhenomenonFees(
+            @RequestParam(required = false, defaultValue = "false") boolean activeOnly
+    ) {
         return ResponseEntity
                 .ok()
-                .body(weatherPhenomenonFeeService.findAllFees());
+                .body(weatherPhenomenonFeeService.findAllFees(activeOnly));
     }
 
     @PatchMapping("/deactivate/{id}")

@@ -1,5 +1,6 @@
 package com.fuj.fujitsuproject.airtempfee;
 
+import com.fuj.fujitsuproject.shared.repository.VehicleAndWeatherBasedFeeRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AirTemperatureFeeRepository extends JpaRepository<AirTemperatureFee, Long> {
+public interface AirTemperatureFeeRepository extends VehicleAndWeatherBasedFeeRepository<AirTemperatureFee> {
 
     @Query(value = """
     SELECT * FROM atef
@@ -54,4 +55,7 @@ public interface AirTemperatureFeeRepository extends JpaRepository<AirTemperatur
 
     @EntityGraph(attributePaths = {"vehicle"})
     List<AirTemperatureFee> findAll();
+
+    @EntityGraph(attributePaths = {"vehicle"})
+    List<AirTemperatureFee> findAllByActiveTrue();
 }

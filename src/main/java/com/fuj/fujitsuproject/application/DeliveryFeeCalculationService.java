@@ -17,10 +17,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Main service that processes the request for calculation of delivery fee
+ * based on vehicle and city.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FeeCalculationService {
+public class DeliveryFeeCalculationService {
 
     private final List<VehicleAndWeatherBasedFeeService> vehicleAndWeatherBasedFeeServices;
     private final CityService cityService;
@@ -28,29 +32,37 @@ public class FeeCalculationService {
     private final RegionalBaseFeeService regionalBaseFeeService;
     private final WeatherService weatherService;
 
+    /**
+     * Calculates the total delivery fee.
+     * Fee is calculated considering regional base fee and all implemented vehicle and weather
+     * based fee services.
+     * @param deliveryFeeCalculationDTO the DTO containing the information needed to calculate the fee.
+     *                                  Includes the city, vehicle and optional time.
+     * @return the total calculated delivery fee based on regional base fee and
+     * weather and vehicle based fees.
+     */
     public BigDecimal calculateDeliveryFee(DeliveryFeeCalculationDTO deliveryFeeCalculationDTO) {
 
         log.info("Calculating delivery fee for {}", deliveryFeeCalculationDTO);
-        System.out.println("gvg");
-        System.out.println(vehicleAndWeatherBasedFeeServices);
+
         String cityName = deliveryFeeCalculationDTO.getCity();
         City city = cityService.findCityByName(cityName);
 
         String vehicleName = deliveryFeeCalculationDTO.getVehicle();
         Vehicle vehicle = vehicleService.findVehicleByName(vehicleName);
 
-        final Optional<LocalDateTime> timeToSearch = Optional.ofNullable(deliveryFeeCalculationDTO.getTime());
+        final Optional<LocalDateTime> time = Optional.ofNullable(
+                deliveryFeeCalculationDTO.getTime());
 
         BigDecimal totalFee = BigDecimal.ZERO;
         totalFee = totalFee.add(regionalBaseFeeService
-                .calculateFeeForVehicleAndCity(vehicle, city, timeToSearch));
-        log.info("Regional base fee = {}", totalFee);
+                .calculateFeeForVehicleAndCity(vehicle, city, time));
 
-        Weather weather = weatherService.findWeatherByCityAndTime(city, timeToSearch);
+        Weather weather = weatherService.findWeatherByCityAndTime(city, time);
 
         totalFee = vehicleAndWeatherBasedFeeServices
                 .stream()
-                .map(service -> service.calculateFee(vehicle, weather, timeToSearch))
+                .map(service -> service.calculateFee(vehicle, weather, time))
                 .reduce(totalFee, BigDecimal::add);
 
         return totalFee;

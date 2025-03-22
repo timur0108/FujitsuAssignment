@@ -19,35 +19,19 @@ public class WeatherService {
 
     private final WeatherRepository weatherRepository;
     private final CityService cityService;
+    private final ObservationDataToWeatherMapper mapper;
 
     public void saveObservationData(Observations observations) {
         log.info("Saving observation data.");
-
-        LocalDateTime observationTime = TimeUtils
-                .convertUnix2LocalDateTime(observations.getTimestamp());
 
         List<String> stations = cityService.getAllStations();
         if (stations.isEmpty()) {
             log.info("Couldn't fetch stations from database");
             return;
         }
-        // мб сделать так чтобы проверялось нашлись ли данные для каждой станции.
         log.info("needed stations: {}", stations);
 
-        List<Weather> weatherData = observations
-                .getStations()
-                .stream()
-                .filter(station -> stations.contains(station.getName()))
-                .map(station -> {
-                    Weather weather = new Weather();
-                    weather.setObservationTime(observationTime);
-                    weather.setWeatherPhenomenon(station.getPhenomenon());
-                    weather.setAirTemperature(station.getAirTemperature());
-                    weather.setWindSpeed(station.getWindSpeed());
-                    weather.setStationName(station.getName());
-                    weather.setWmoCode(station.getWmoCode());
-                    return weather;
-                }).toList();
+        List<Weather> weatherData = mapper.toWeatherList(observations, stations);
         log.info("Fetched weather data: {}", weatherData);
 
         weatherRepository.saveAll(weatherData);

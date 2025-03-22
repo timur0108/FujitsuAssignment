@@ -1,4 +1,4 @@
-package com.fuj.fujitsuproject.shared.exception;
+package com.fuj.fujitsuproject.advice;
 
 import lombok.Data;
 

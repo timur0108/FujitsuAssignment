@@ -1,16 +1,14 @@
 package com.fuj.fujitsuproject.regionalbasefee;
 
-import com.fuj.fujitsuproject.regionalbasefee.dto.RegionalBaseFeeCreateDTO;
 import com.fuj.fujitsuproject.city.City;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
-import com.fuj.fujitsuproject.shared.exception.RegionalBaseFeeAlreadyExistsException;
-import com.fuj.fujitsuproject.shared.exception.RegionalBaseFeeAlreadyInactiveException;
 import com.fuj.fujitsuproject.city.CityService;
 import com.fuj.fujitsuproject.vehicle.VehicleService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -25,6 +23,7 @@ public class RegionalBaseFeeService {
     private final RegionalBaseFeeRepository regionalBaseFeeRepository;
     private final CityService cityService;
     private final VehicleService vehicleService;
+    private final RegionalBaseFeeMapper mapper;
 
     private RegionalBaseFee findRbfByVehicleAndCityAndTime(Vehicle vehicle, City city, LocalDateTime time) {
         return regionalBaseFeeRepository
@@ -34,60 +33,85 @@ public class RegionalBaseFeeService {
                         ", time=" + time));
     }
 
-    private RegionalBaseFee findLatestActiveRbfByVehicleAndCity(Vehicle vehicle, City city) {
+    private RegionalBaseFee findActiveRbfByVehicleAndCity(Vehicle vehicle, City city) {
         return regionalBaseFeeRepository
-                .findLatestActiveRbfByCityIdAndVehicleId(vehicle.getId(), city.getId())
+                .findByVehicleIdAndCityIdAndActiveTrue(vehicle.getId(), city.getId())
                 .orElseThrow(() -> new EntityNotFoundException("" +
                         "Couldn't find latest active regional base fee for vehicle" +
                         "=" + vehicle + ", city=" + city));
     }
 
+    /**
+     * Calculates the fee for a given vehicle and city, optionally considering a specific time.
+     * If the time is provided, calls method to fetch regional base fee for that specific time.
+     * Otherwise, calls method to fetch currently active regional base fee.
+     *
+     * @param vehicle the vehicle for which the fee is calculated
+     * @param city the city for which the fee is calculated
+     * @param time an optional parameter. If provided, the fee will be calculated based on
+     *             the fee for that time. Otherwise, the currently active fee will be used.
+     * @return the fee amount for the given vehicle and city and time.
+     */
     public BigDecimal calculateFeeForVehicleAndCity(Vehicle vehicle, City city, Optional<LocalDateTime> time) {
 
         RegionalBaseFee regionalBaseFee;
 
         if (time.isPresent()) regionalBaseFee = findRbfByVehicleAndCityAndTime(vehicle, city, time.get());
-        else regionalBaseFee = findLatestActiveRbfByVehicleAndCity(vehicle, city);
+        else regionalBaseFee = findActiveRbfByVehicleAndCity(vehicle, city);
 
-        log.info("regional base fee=" + regionalBaseFee.getAmount());
-        return regionalBaseFee.getAmount();
+        BigDecimal feeAmount = regionalBaseFee.getAmount();
+        log.info("regional base fee(city = {}, vehicle={})={}", city, vehicle, feeAmount);
+        return feeAmount;
     }
 
-    public List<RegionalBaseFee> findALlRegionalBaseFees() {
+    /**
+     * Method for retrieving all regional base fees from database.
+     * @param activeOnly if activeOnly is true then retrieves only those
+     *                   fees that are currently active.
+     * @return List of found regional base fees.
+     */
+    public List<RegionalBaseFee> findALlRegionalBaseFees(boolean activeOnly) {
+        if (activeOnly) return regionalBaseFeeRepository.findAllByActiveTrue();
         return regionalBaseFeeRepository.findAll();
     }
 
+    /**
+     * Adds a new regional base fee for a given vehicle and city.
+     * If an active regional base fee already exists for the same vehicle and city,
+     * it will be deactivated before the new fee is added.
+     *
+     * This method retrieves the city and vehicle entities using their respective IDs
+     * from the provided DTO, checks if an active regional base fee already exists,
+     * deactivates it if necessary, and then creates and saves a new regional base fee
+     * based on the provided data.
+     *
+     * @param regionalBaseFeeCreateDTO the data transfer object containing the fee amount,
+     *                                 vehicle ID, and city ID used to create
+     *                                 the new regional base fee.
+     * @return the newly created regional base fee entity after being saved.
+     */
+    @Transactional
     public RegionalBaseFee addRegionalBaseFee(RegionalBaseFeeCreateDTO regionalBaseFeeCreateDTO) {
 
         City city = cityService.findCityById(regionalBaseFeeCreateDTO.getCityId());
         Vehicle vehicle = vehicleService.findVehicleById(regionalBaseFeeCreateDTO.getVehicleId());
 
-        Optional<RegionalBaseFee> existingRegionalBaseFee = regionalBaseFeeRepository
-                .findByVehicleAndCityAndActiveTrue(vehicle, city);
+        Optional<RegionalBaseFee> existingRegionalBaseFeeOptional = regionalBaseFeeRepository
+                .findByVehicleIdAndCityIdAndActiveTrue(vehicle.getId(), city.getId());
 
-        if (existingRegionalBaseFee.isPresent()) throw new RegionalBaseFeeAlreadyExistsException();
+        if (existingRegionalBaseFeeOptional.isPresent()) {
+            deactivateRegionalBaseFee(existingRegionalBaseFeeOptional.get());
+        }
 
-        RegionalBaseFee regionalBaseFee = new RegionalBaseFee();
-        regionalBaseFee.setCity(city);
-        regionalBaseFee.setVehicle(vehicle);
-        regionalBaseFee.setActive(true);
-        regionalBaseFee.setAmount(regionalBaseFeeCreateDTO.getAmount());
+        RegionalBaseFee regionalBaseFee = mapper.toRegionalBaseFee(city, vehicle, regionalBaseFeeCreateDTO.getAmount());
 
         return regionalBaseFeeRepository.save(regionalBaseFee);
     }
 
-    public void deactivateRegionalBaseFee(Long id) {
-
-        RegionalBaseFee regionalBaseFee = regionalBaseFeeRepository
-                .findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Couldn't find regional base fee by id=" + id));
-
-        if (!regionalBaseFee.isActive()) throw new RegionalBaseFeeAlreadyInactiveException();
-
+    private void deactivateRegionalBaseFee(RegionalBaseFee regionalBaseFee) {
         regionalBaseFee.setActive(false);
         regionalBaseFee.setDeactivatedAt(LocalDateTime.now());
-
         regionalBaseFeeRepository.save(regionalBaseFee);
     }
+
 }

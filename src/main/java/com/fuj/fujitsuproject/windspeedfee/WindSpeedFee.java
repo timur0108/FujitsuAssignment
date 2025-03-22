@@ -16,9 +16,9 @@ import java.time.LocalDateTime;
 public class WindSpeedFee extends VehicleAndWeatherBasedFee {
 
     @Column(name = "min_speed")
-    private BigDecimal minSPeed;
+    private BigDecimal minSpeed;
 
     @Column(name = "max_speed")
-    private BigDecimal maxSPeed;
+    private BigDecimal maxSpeed;
 
 }

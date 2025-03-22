@@ -1,6 +1,5 @@
 package com.fuj.fujitsuproject.advice;
 
-import com.fuj.fujitsuproject.shared.exception.ErrorDetails;
 import com.fuj.fujitsuproject.shared.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.ResponseEntity;
@@ -53,42 +52,9 @@ public class ExceptionControllerAdvice {
                 .body(errorDetails);
     }
 
-    @ExceptionHandler(RegionalBaseFeeAlreadyExistsException.class)
-    public ResponseEntity<ErrorDetails> exceptionRegionalBaseFeeLAlreadyExistsHandler(
-            RegionalBaseFeeAlreadyExistsException e) {
-
-        ErrorDetails errorDetails = new ErrorDetails();
-        errorDetails.setMessage(e.getMessage());
-        return ResponseEntity
-                .badRequest()
-                .body(errorDetails);
-    }
-
-    @ExceptionHandler(RegionalBaseFeeAlreadyInactiveException.class)
-    public ResponseEntity<ErrorDetails> exceptionRegionBaseFeeAlreadyInactiveHandler(
-            RegionalBaseFeeAlreadyInactiveException e) {
-
-        ErrorDetails errorDetails = new ErrorDetails();
-        errorDetails.setMessage(e.getMessage());
-        return ResponseEntity
-                .badRequest()
-                .body(errorDetails);
-    }
-
     @ExceptionHandler(OverlappingAirTemperatureFeesException.class)
     public ResponseEntity<ErrorDetails> exceptionOverlappingAirTemperatureFeesHandler(
             OverlappingAirTemperatureFeesException e) {
-
-        ErrorDetails errorDetails = new ErrorDetails();
-        errorDetails.setMessage(e.getMessage());
-        return ResponseEntity
-                .badRequest()
-                .body(errorDetails);
-    }
-
-    @ExceptionHandler(AirTemperatureFeeAlreadyInactiveException.class)
-    public ResponseEntity<ErrorDetails> exceptionAirTemperatureFeeAlreadyInactiveHandler(
-            AirTemperatureFeeAlreadyInactiveException e) {
 
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setMessage(e.getMessage());
@@ -111,6 +77,17 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler(OverlappingWeatherPhenomenon.class)
     public ResponseEntity<ErrorDetails> exceptionOverlappingWeatherPhenomenonHandler(
             OverlappingWeatherPhenomenon e) {
+
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setMessage(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(errorDetails);
+    }
+
+    @ExceptionHandler(FeeToDeactivateNotFound.class)
+    public ResponseEntity<ErrorDetails> exceptionFeeToDeactivateNotFoundHandler(
+            FeeToDeactivateNotFound e) {
 
         ErrorDetails errorDetails = new ErrorDetails();
         errorDetails.setMessage(e.getMessage());

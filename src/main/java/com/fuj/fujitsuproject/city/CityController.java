@@ -15,14 +15,22 @@ public class CityController {
 
     private final CityService cityService;
 
+    /**
+     * Controller that returns all cities stored in database.
+     * @return ResponseEntity containing list of all cities.
+     */
     @GetMapping("/all")
     public ResponseEntity<List<City>> getAllCities() {
-
         return ResponseEntity.ok(
                 cityService.getAllCities()
         );
     }
 
+    /**
+     * Creates new city entity based on provided cityCreateDTO
+     * @param cityCreateDTO DTO containing all needed data to create new city.
+     * @return returns ResponseEntity containing newly created city.
+     */
     @PostMapping
     public ResponseEntity<City> addCity(@RequestBody @Valid CityCreateDTO cityCreateDTO) {
 
@@ -31,10 +39,10 @@ public class CityController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCityById(@PathVariable Long id) {
-
         cityService.deleteCityById(id);
         return ResponseEntity.ok().build();
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<City> updateCity(@PathVariable Long id,

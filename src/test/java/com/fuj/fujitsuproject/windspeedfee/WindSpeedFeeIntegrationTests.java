@@ -1,7 +1,6 @@
-package com.fuj.fujitsuproject.service;
+package com.fuj.fujitsuproject.windspeedfee;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fuj.fujitsuproject.windspeedfee.WindSpeedFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.weather.Weather;
 import com.fuj.fujitsuproject.shared.exception.VehicleForbiddenException;

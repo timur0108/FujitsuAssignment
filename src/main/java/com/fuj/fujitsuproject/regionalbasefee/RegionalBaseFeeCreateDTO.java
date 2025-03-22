@@ -1,4 +1,4 @@
-package com.fuj.fujitsuproject.regionalbasefee.dto;
+package com.fuj.fujitsuproject.regionalbasefee;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

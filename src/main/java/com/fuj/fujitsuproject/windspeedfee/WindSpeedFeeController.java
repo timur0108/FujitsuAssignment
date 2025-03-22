@@ -1,6 +1,5 @@
 package com.fuj.fujitsuproject.windspeedfee;
 
-import com.fuj.fujitsuproject.windspeedfee.dto.WindSpeedFeeCreateDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,16 +10,18 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/wpf")
+@RequestMapping("api/wsef")
 public class WindSpeedFeeController {
 
     private final WindSpeedFeeService windSpeedFeeService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<WindSpeedFee>> getAllWindSpeedFees() {
+    public ResponseEntity<List<WindSpeedFee>> getAllWindSpeedFees(
+            @RequestParam(required = false, defaultValue = "false") boolean activeOnly
+    ) {
         return ResponseEntity
                 .ok()
-                .body(windSpeedFeeService.findAllWindSpeedFees());
+                .body(windSpeedFeeService.findAllFees(activeOnly));
     }
 
     @PostMapping

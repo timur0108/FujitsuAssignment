@@ -12,16 +12,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service for managing WeatherPhenomenonFee entities.
+ * This class extends {@link VehicleAndWeatherBasedFeeService}.
+ */
 @Slf4j
 @Service
 public class WeatherPhenomenonFeeService extends VehicleAndWeatherBasedFeeService<WeatherPhenomenonFee, WeatherPhenomenonFeeRepository> {
 
     protected final VehicleService vehicleService;
+    private final WeatherPhenomenonFeeMapper mapper;
 
     public WeatherPhenomenonFeeService(WeatherPhenomenonFeeRepository weatherPhenomenonFeeRepository,
-                                       VehicleService vehicleService) {
+                                       VehicleService vehicleService, WeatherPhenomenonFeeMapper mapper) {
         super(weatherPhenomenonFeeRepository);
         this.vehicleService = vehicleService;
+        this.mapper = mapper;
     }
 
     protected Optional<WeatherPhenomenonFee> findFeeByVehicleAndWeatherAndTime(
@@ -38,10 +44,13 @@ public class WeatherPhenomenonFeeService extends VehicleAndWeatherBasedFeeServic
                 .findLatestWeatherPhenomenonFeeByVehicleIdAndPhenomenon(vehicle.getId(), weather.getWeatherPhenomenon().toLowerCase());
     }
 
-    public List<WeatherPhenomenonFee> findAllFees() {
-        return repository.findAll();
-    }
 
+    /**
+     * Creates a new WeatherPhenomenonFee based on the provided DTO.
+     * This method checks for overlapping phenomenon names before creating the fee.
+     * @param weatherPhenomenonFeeCreateDTO The DTO containing the data to create a new WeatherPhenomenonFee
+     * @return created WeatherPhenomenonFee entity
+     */
     public WeatherPhenomenonFee createWeatherPhenomenonFee(
             WeatherPhenomenonFeeCreateDTO weatherPhenomenonFeeCreateDTO
     ) {
@@ -49,22 +58,22 @@ public class WeatherPhenomenonFeeService extends VehicleAndWeatherBasedFeeServic
         Vehicle vehicle = vehicleService.findVehicleById(weatherPhenomenonFeeCreateDTO.getVehicleId());
 
         String phenomenon = weatherPhenomenonFeeCreateDTO.getPhenomenon();
+        checkForOverlappingFees(phenomenon, vehicle);
 
-        //поиск по транспорту ещё должен быть
-        Optional<WeatherPhenomenonFee> existingWeatherPhenomenonFee =
-                repository
-                        .findWeatherPhenomenonFeeByPhenomenonAndVehicleIdAndActiveTrue(phenomenon, vehicle.getId());
-
-        if (existingWeatherPhenomenonFee.isPresent()) throw new OverlappingWeatherPhenomenon(phenomenon);
-
-        WeatherPhenomenonFee weatherPhenomenonFee = new WeatherPhenomenonFee();
-        weatherPhenomenonFee.setPhenomenon(phenomenon);
-        weatherPhenomenonFee.setAmount(weatherPhenomenonFeeCreateDTO.getAmount());
-        weatherPhenomenonFee.setForbidden(weatherPhenomenonFeeCreateDTO.isForbidden());
-        weatherPhenomenonFee.setVehicle(vehicle);
-        weatherPhenomenonFee.setActive(true);
+        WeatherPhenomenonFee weatherPhenomenonFee = mapper.toWeatherPhenomenonFee(
+                weatherPhenomenonFeeCreateDTO, vehicle);
 
         return repository.save(weatherPhenomenonFee);
     }
 
+    private void checkForOverlappingFees(String phenomenon, Vehicle vehicle) {
+        List<WeatherPhenomenonFee> existingWeatherPhenomenonFee =
+                repository
+                        .findWeatherPhenomenonFeeByPhenomenonAndVehicleIdAndActiveTrue(
+                                phenomenon.toLowerCase(), vehicle.getId());
+
+        if (!existingWeatherPhenomenonFee.isEmpty()) {
+            throw new OverlappingWeatherPhenomenon(phenomenon, existingWeatherPhenomenonFee);
+        }
+    }
 }

@@ -1,12 +1,8 @@
-package com.fuj.fujitsuproject.controller;
+package com.fuj.fujitsuproject.regionalbasefee;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fuj.fujitsuproject.regionalbasefee.dto.RegionalBaseFeeCreateDTO;
 import com.fuj.fujitsuproject.city.City;
-import com.fuj.fujitsuproject.regionalbasefee.RegionalBaseFee;
 import com.fuj.fujitsuproject.city.CityRepository;
-import com.fuj.fujitsuproject.regionalbasefee.RegionalBaseFeeRepository;
-import com.fuj.fujitsuproject.vehicle.VehicleRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,8 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -34,29 +28,7 @@ public class RegionalBaseFeeControllerIntegrationTests {
     private MockMvc mockMvc;
 
     @Autowired
-    private RegionalBaseFeeRepository regionalBaseFeeRepository;
-
-    @Autowired
     private CityRepository cityRepository;
-    @Autowired
-    private VehicleRepository vehicleRepository;
-
-    @Test
-    void testDeactivateRbf() throws Exception{
-
-        RegionalBaseFee fee = regionalBaseFeeRepository.findById(11L).orElseThrow();
-        assertTrue(fee.isActive());
-
-        mockMvc.perform(patch("/api/rbf/deactivate/" + 11)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-
-        RegionalBaseFee updatedFee = regionalBaseFeeRepository
-                .findById(11L)
-                .orElseThrow();
-
-        assertTrue(updatedFee.isActive() == false);
-    }
 
     @Test
     void testCreatingNewRbf() throws Exception{

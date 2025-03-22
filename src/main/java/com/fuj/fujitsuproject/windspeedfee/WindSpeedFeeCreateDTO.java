@@ -1,4 +1,4 @@
-package com.fuj.fujitsuproject.windspeedfee.dto;
+package com.fuj.fujitsuproject.windspeedfee;
 
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;

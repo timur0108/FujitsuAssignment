@@ -1,4 +1,4 @@
-package com.fuj.fujitsuproject.domain.airtempfee;
+package com.fuj.fujitsuproject.airtempfee;
 
 import com.fuj.fujitsuproject.airtempfee.AirTemperatureFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;

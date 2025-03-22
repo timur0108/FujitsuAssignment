@@ -1,4 +1,4 @@
-package com.fuj.fujitsuproject.domain.regionalbasefee;
+package com.fuj.fujitsuproject.regionalbasefee;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,7 +6,6 @@ import com.fuj.fujitsuproject.city.City;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.city.CityRepository;
 import com.fuj.fujitsuproject.vehicle.VehicleRepository;
-import com.fuj.fujitsuproject.regionalbasefee.RegionalBaseFeeService;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;

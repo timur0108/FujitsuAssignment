@@ -25,7 +25,7 @@ public class WeatherDataScheduler {
             return;
         }
 
-        if (observations == null || observations.getStations() == null) {
+        if (observations == null || observations.getStations().isEmpty()) {
             log.info("Fetched empty data");
             return;
         }

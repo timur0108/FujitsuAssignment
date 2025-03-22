@@ -1,5 +1,6 @@
 package com.fuj.fujitsuproject.weatherphenomenonfee;
 
+import com.fuj.fujitsuproject.shared.repository.VehicleAndWeatherBasedFeeRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface WeatherPhenomenonFeeRepository extends JpaRepository<WeatherPhenomenonFee, Long> {
+public interface WeatherPhenomenonFeeRepository extends VehicleAndWeatherBasedFeeRepository<WeatherPhenomenonFee> {
 
     @Query(value = """
     SELECT * FROM wpef
@@ -37,9 +38,18 @@ public interface WeatherPhenomenonFeeRepository extends JpaRepository<WeatherPhe
     Optional<WeatherPhenomenonFee> findLatestWeatherPhenomenonFeeByVehicleIdAndPhenomenon(
             @Param("vehicleId") Long vehicleId, @Param("weatherPhenomenon") String weatherPhenomenon);
 
-    Optional<WeatherPhenomenonFee> findWeatherPhenomenonFeeByPhenomenonAndVehicleIdAndActiveTrue(
+    @Query("""
+    SELECT w FROM WeatherPhenomenonFee w 
+    WHERE (w.phenomenon LIKE %:phenomenon% OR :phenomenon LIKE CONCAT('%', w.phenomenon, '%'))
+    AND w.vehicle.id = :vehicleId
+    AND w.active = true
+""")
+    List<WeatherPhenomenonFee> findWeatherPhenomenonFeeByPhenomenonAndVehicleIdAndActiveTrue(
             String phenomenon, Long vehicleId);
 
     @EntityGraph(attributePaths = {"vehicle"})
     List<WeatherPhenomenonFee> findAll();
+
+    @EntityGraph(attributePaths = {"vehicle"})
+    List<WeatherPhenomenonFee> findAllByActiveTrue();
 }
