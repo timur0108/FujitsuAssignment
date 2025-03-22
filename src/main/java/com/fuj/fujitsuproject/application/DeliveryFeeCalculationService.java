@@ -45,14 +45,15 @@ public class DeliveryFeeCalculationService {
 
         log.info("Calculating delivery fee for {}", deliveryFeeCalculationDTO);
 
+        final Optional<LocalDateTime> time = Optional.ofNullable(
+                deliveryFeeCalculationDTO.getTime());
+
         String cityName = deliveryFeeCalculationDTO.getCity();
-        City city = cityService.findCityByName(cityName);
+        City city = cityService.findCityByNameAndTime(cityName, time);
 
         String vehicleName = deliveryFeeCalculationDTO.getVehicle();
         Vehicle vehicle = vehicleService.findVehicleByName(vehicleName);
 
-        final Optional<LocalDateTime> time = Optional.ofNullable(
-                deliveryFeeCalculationDTO.getTime());
 
         BigDecimal totalFee = BigDecimal.ZERO;
         totalFee = totalFee.add(regionalBaseFeeService

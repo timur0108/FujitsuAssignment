@@ -34,4 +34,6 @@ public interface RegionalBaseFeeRepository extends JpaRepository<RegionalBaseFee
     List<RegionalBaseFee> findAllByActiveTrue();
 
     Optional<RegionalBaseFee> findByVehicleIdAndCityIdAndActiveTrue(Long vehicleId, Long cityId);
+
+    List<RegionalBaseFee> findAllByCityAndActiveTrue(City city);
 }

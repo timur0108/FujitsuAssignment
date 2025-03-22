@@ -1,6 +1,6 @@
-INSERT INTO city (name, station_name) VALUES ('Tallinn', 'Tallinn-Harku');
-INSERT INTO city (name, station_name) VALUES ('Tartu', 'Tartu-Tõravere');
-INSERT INTO city (name, station_name) VALUES ('Pärnu', 'Pärnu');
+INSERT INTO city (name, station_name, deleted) VALUES ('Tallinn', 'Tallinn-Harku', false);
+INSERT INTO city (name, station_name, deleted) VALUES ('Tartu', 'Tartu-Tõravere', false);
+INSERT INTO city (name, station_name, deleted) VALUES ('Pärnu', 'Pärnu', false);
 
 INSERT INTO vehicle (name) VALUES ('car');
 INSERT INTO vehicle (name) VALUES ('scooter');

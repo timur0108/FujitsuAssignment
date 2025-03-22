@@ -11,7 +11,10 @@ CREATE TABLE weather (
 CREATE TABLE city (
     id BIGINT AUTO_INCREMENT  PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    station_name VARCHAR(100) NOT NULL
+    station_name VARCHAR(100) NOT NULL,
+    deleted BOOLEAN NOT NULL,
+    deleted_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS vehicle (

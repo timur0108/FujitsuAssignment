@@ -20,9 +20,11 @@ public class CityController {
      * @return ResponseEntity containing list of all cities.
      */
     @GetMapping("/all")
-    public ResponseEntity<List<City>> getAllCities() {
+    public ResponseEntity<List<City>> getAllCities(
+            @RequestParam(required = false, defaultValue = "false") boolean notDeletedOnly
+    ) {
         return ResponseEntity.ok(
-                cityService.getAllCities()
+                cityService.getAllCities(notDeletedOnly)
         );
     }
 

@@ -3,6 +3,7 @@ package com.fuj.fujitsuproject.regionalbasefee;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fuj.fujitsuproject.city.City;
+import com.fuj.fujitsuproject.city.CityService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.city.CityRepository;
 import com.fuj.fujitsuproject.vehicle.VehicleRepository;
@@ -29,6 +30,9 @@ public class RegionalBaseFeeIntegrationTests {
     private CityRepository cityRepository;
 
     @Autowired
+    private CityService cityService;
+
+    @Autowired
     private VehicleRepository vehicleRepository;
 
     @ParameterizedTest
@@ -41,7 +45,7 @@ public class RegionalBaseFeeIntegrationTests {
             "BIKE, Tallinn, 3",
             "car, Pärnu, 3",
             "scooter, Pärnu, 2.5",
-            "Bike, Pärnu, 2"
+            "Bike, Pärnu, 2",
     })
     void testRegionalBaseFeeCalculation(String vehicleName, String cityName,
                                         BigDecimal expectedFee) {
@@ -71,6 +75,7 @@ public class RegionalBaseFeeIntegrationTests {
             "scooter, Pärnu, 2.2, 2025-01-01T12:00:00",
             "Bike, Pärnu, 1.8, 2025-01-01T12:00:00",
             "Bike, Pärnu, 2.5, 2024-08-14T17:00:00",
+            "Bike, Narva, 10, 2025-01-01T17:00:00",
     })
     void testRegionalBaseFeeCalculationWithTimeProvided(
             String vehicleName, String cityName, BigDecimal expectedFee, LocalDateTime time
@@ -78,9 +83,8 @@ public class RegionalBaseFeeIntegrationTests {
         Vehicle vehicle = vehicleRepository.findByNameEqualsIgnoreCase(vehicleName)
                 .orElseThrow(() -> new RuntimeException("Vehicle not found"));
 
-        City city = cityRepository.findByNameEquals(cityName)
-                .orElseThrow(() -> new RuntimeException("City not found"));
-
+        City city = cityService.findCityByNameAndTime(cityName, Optional.ofNullable(time));
+        System.out.println("City for " + cityName + " =" + city);
         BigDecimal feeAmount = regionalBaseFeeService.calculateFeeForVehicleAndCity(
                 vehicle, city, Optional.of(time));
 
