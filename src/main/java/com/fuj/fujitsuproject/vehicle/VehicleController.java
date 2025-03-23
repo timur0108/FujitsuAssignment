@@ -31,9 +31,14 @@ public class VehicleController {
     @PutMapping("/{id}")
     public ResponseEntity<Vehicle> updateVehicle(@PathVariable Long id,
                                                  @RequestBody @Valid VehicleCreateDTO vehicleCreateDTO) {
-
         return ResponseEntity
                 .ok()
                 .body(vehicleService.updateVehicle(id, vehicleCreateDTO));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteVehicle(@PathVariable Long id) {
+        vehicleService.deleteVehicle(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

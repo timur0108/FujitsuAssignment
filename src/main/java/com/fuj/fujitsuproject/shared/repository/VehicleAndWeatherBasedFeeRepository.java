@@ -16,4 +16,6 @@ public interface VehicleAndWeatherBasedFeeRepository<E extends VehicleAndWeather
 
     @EntityGraph(attributePaths = {"vehicle"})
     List<E> findAllByActiveTrue();
+
+    List<E> findByVehicleIdAndActiveTrue(Long vehicleId);
 }

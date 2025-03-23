@@ -52,7 +52,7 @@ public class DeliveryFeeCalculationService {
         City city = cityService.findCityByNameAndTime(cityName, time);
 
         String vehicleName = deliveryFeeCalculationDTO.getVehicle();
-        Vehicle vehicle = vehicleService.findVehicleByName(vehicleName);
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(vehicleName, time);
 
 
         BigDecimal totalFee = BigDecimal.ZERO;

@@ -114,6 +114,13 @@ public class RegionalBaseFeeService {
         regionalBaseFeeRepository.save(regionalBaseFee);
     }
 
+    public void deactivateRegionalBaseFeeByVehicle(Long id) {
+        regionalBaseFeeRepository
+                .findALlByVehicleIdAndActiveTrue(id)
+                .stream()
+                .forEach(this::deactivateRegionalBaseFee);
+    }
+
     public void deactivateRegionalBaseFeesByCity(City city) {
         regionalBaseFeeRepository
                 .findAllByCityAndActiveTrue(city)

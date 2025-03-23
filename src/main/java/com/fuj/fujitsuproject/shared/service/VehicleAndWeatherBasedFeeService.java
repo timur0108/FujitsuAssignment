@@ -95,7 +95,6 @@ public abstract class VehicleAndWeatherBasedFeeService<E extends VehicleAndWeath
      * @throws EntityNotFoundException if the fee with the given id is not found
      * @throws FeeAlreadyInactiveException if the fee is already inactive
      */
-    @Transactional
     public void deactivateFee(Long id) {
         E fee = repository
                 .findById(id)
@@ -104,5 +103,12 @@ public abstract class VehicleAndWeatherBasedFeeService<E extends VehicleAndWeath
         if (!fee.isActive()) throw new FeeAlreadyInactiveException();
         fee.setActive(false);
         fee.setDeactivatedAt(LocalDateTime.now());
+        repository.save(fee);
+    }
+
+    @Transactional
+    public void deactivateByVehicleId(Long id) {
+        List<E> fees = repository.findByVehicleIdAndActiveTrue(id);
+        fees.stream().forEach(fee -> deactivateFee(fee.getId()));
     }
 }

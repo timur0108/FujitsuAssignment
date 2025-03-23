@@ -2,6 +2,7 @@ package com.fuj.fujitsuproject.windspeedfee;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fuj.fujitsuproject.vehicle.Vehicle;
+import com.fuj.fujitsuproject.vehicle.VehicleService;
 import com.fuj.fujitsuproject.weather.Weather;
 import com.fuj.fujitsuproject.shared.exception.VehicleForbiddenException;
 import com.fuj.fujitsuproject.vehicle.VehicleRepository;
@@ -26,6 +27,9 @@ public class WindSpeedFeeIntegrationTests {
 
     @Autowired
     private WindSpeedFeeService windSpeedFeeService;
+
+    @Autowired
+    private VehicleService vehicleService;
 
     @Autowired
     private VehicleRepository vehicleRepository;
@@ -89,9 +93,7 @@ public class WindSpeedFeeIntegrationTests {
         Weather weather = new Weather();
         weather.setWindSpeed(windSpeed);
 
-        Vehicle vehicle = vehicleRepository
-                .findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException());
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(vehicleName, Optional.ofNullable(time));
 
         return windSpeedFeeService
                 .calculateFee(vehicle, weather, Optional.ofNullable(time));

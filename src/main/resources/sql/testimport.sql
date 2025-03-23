@@ -4,9 +4,9 @@ INSERT INTO city (name, station_name, deleted, created_at) VALUES ('PÃ¤rnu', 'PÃ
 INSERT INTO city (name, station_name, deleted, created_at, deleted_at) VALUES ('Narva', 'Narva', true, '2024-12-01 12:00:00', '2025-03-01 12:00:00');
 
 
-INSERT INTO vehicle (name) VALUES ('car');
-INSERT INTO vehicle (name) VALUES ('scooter');
-INSERT INTO vehicle (name) VALUES ('bike');
+INSERT INTO vehicle (name, deleted, created_at) VALUES ('car', false, '2019-12-01 12:00:00');
+INSERT INTO vehicle (name, deleted, created_at) VALUES ('scooter', false, '2019-12-01 12:00:00');
+INSERT INTO vehicle (name, deleted, created_at) VALUES ('bike', false, '2019-12-01 12:00:00');
 
 INSERT INTO rbf (city_id, vehicle_id, amount, created_at, active, deactivated_at)
 VALUES

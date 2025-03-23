@@ -5,6 +5,7 @@ import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.weather.Weather;
 import com.fuj.fujitsuproject.shared.exception.OverlappingAirTemperatureFeesException;
 import com.fuj.fujitsuproject.vehicle.VehicleService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -43,6 +44,7 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
         log.info("dto " + airTemperatureFeeCreateDTO.toString());
         Vehicle vehicle = vehicleService
                 .findVehicleById(airTemperatureFeeCreateDTO.getVehicleId());
+        if (vehicle.isDeleted()) throw new EntityNotFoundException("Provided vehicle is currently deleted");
 
         BigDecimal minTemperature = airTemperatureFeeCreateDTO.getMinTemperature();
         BigDecimal maxTemperature = airTemperatureFeeCreateDTO.getMaxTemperature();

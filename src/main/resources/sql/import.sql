@@ -2,9 +2,9 @@ INSERT INTO city (name, station_name, deleted) VALUES ('Tallinn', 'Tallinn-Harku
 INSERT INTO city (name, station_name, deleted) VALUES ('Tartu', 'Tartu-Tõravere', false);
 INSERT INTO city (name, station_name, deleted) VALUES ('Pärnu', 'Pärnu', false);
 
-INSERT INTO vehicle (name) VALUES ('car');
-INSERT INTO vehicle (name) VALUES ('scooter');
-INSERT INTO vehicle (name) VALUES ('bike');
+INSERT INTO vehicle (name, deleted) VALUES ('car', false);
+INSERT INTO vehicle (name, deleted) VALUES ('scooter', false);
+INSERT INTO vehicle (name, deleted) VALUES ('bike', false);
 
 INSERT INTO rbf (city_id, vehicle_id, amount, active)
 VALUES
