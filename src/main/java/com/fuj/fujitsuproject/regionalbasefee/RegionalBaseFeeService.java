@@ -1,6 +1,8 @@
 package com.fuj.fujitsuproject.regionalbasefee;
 
 import com.fuj.fujitsuproject.city.City;
+import com.fuj.fujitsuproject.shared.exception.CityDeletedException;
+import com.fuj.fujitsuproject.shared.exception.VehicleDeletedException;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.city.CityService;
 import com.fuj.fujitsuproject.vehicle.VehicleService;
@@ -70,9 +72,13 @@ public class RegionalBaseFeeService {
      *                   fees that are currently active.
      * @return List of found regional base fees.
      */
-    public List<RegionalBaseFee> findALlRegionalBaseFees(boolean activeOnly) {
-        if (activeOnly) return regionalBaseFeeRepository.findAllByActiveTrue();
-        return regionalBaseFeeRepository.findAll();
+    public List<RegionalBaseFeeDTO> findALlRegionalBaseFees(boolean activeOnly) {
+        List<RegionalBaseFee> foundFees;
+        if (activeOnly) foundFees = regionalBaseFeeRepository.findAllByActiveTrue();
+        else foundFees = regionalBaseFeeRepository.findAll();
+        return foundFees.stream()
+                .map(fee -> mapper.toDTO(fee))
+                .toList();
     }
 
     /**
@@ -83,7 +89,7 @@ public class RegionalBaseFeeService {
      * This method retrieves the city and vehicle entities using their respective IDs
      * from the provided DTO, checks if an active regional base fee already exists,
      * deactivates it if necessary, and then creates and saves a new regional base fee
-     * based on the provided data.
+     * based on the provided data. If provided city or vehicle is deleted then exception is thrown.
      *
      * @param regionalBaseFeeCreateDTO the data transfer object containing the fee amount,
      *                                 vehicle ID, and city ID used to create
@@ -94,7 +100,11 @@ public class RegionalBaseFeeService {
     public RegionalBaseFee addRegionalBaseFee(RegionalBaseFeeCreateDTO regionalBaseFeeCreateDTO) {
 
         City city = cityService.findCityById(regionalBaseFeeCreateDTO.getCityId());
+        if (city.isDeleted()) throw new CityDeletedException("Couldn't create new regional base fee" +
+                "because provided city is deleted.");
         Vehicle vehicle = vehicleService.findVehicleById(regionalBaseFeeCreateDTO.getVehicleId());
+        if (vehicle.isDeleted()) throw new VehicleDeletedException("Couldn't create new regional base fee" +
+                " because provided vehicle is deleted");
 
         Optional<RegionalBaseFee> existingRegionalBaseFeeOptional = regionalBaseFeeRepository
                 .findByVehicleIdAndCityIdAndActiveTrue(vehicle.getId(), city.getId());
@@ -108,19 +118,31 @@ public class RegionalBaseFeeService {
         return regionalBaseFeeRepository.save(regionalBaseFee);
     }
 
+    /**
+     * Deactivated provided RegionalBaseFee
+     * @param regionalBaseFee regional base fee to deactivate.
+     */
     private void deactivateRegionalBaseFee(RegionalBaseFee regionalBaseFee) {
         regionalBaseFee.setActive(false);
         regionalBaseFee.setDeactivatedAt(LocalDateTime.now());
         regionalBaseFeeRepository.save(regionalBaseFee);
     }
 
-    public void deactivateRegionalBaseFeeByVehicle(Long id) {
+    /**
+     * Deactivates all regional base fees for provided vehicle id.
+     * @param id id of provided vehicle.
+     */
+    public void deactivateRegionalBaseFeeByVehicleId(Long id) {
         regionalBaseFeeRepository
                 .findALlByVehicleIdAndActiveTrue(id)
                 .stream()
                 .forEach(this::deactivateRegionalBaseFee);
     }
 
+    /**
+     * Deactivates all regional base fees for provided City.
+     * @param city provided City to deactivate all regional base fees by.
+     */
     public void deactivateRegionalBaseFeesByCity(City city) {
         regionalBaseFeeRepository
                 .findAllByCityAndActiveTrue(city)

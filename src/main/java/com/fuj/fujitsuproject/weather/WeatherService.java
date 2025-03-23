@@ -21,6 +21,10 @@ public class WeatherService {
     private final CityService cityService;
     private final ObservationDataToWeatherMapper mapper;
 
+    /**
+     * Processes the observations data received from external API and stores it.
+     * @param observations observations data that needs to be saved.
+     */
     public void saveObservationData(Observations observations) {
         log.info("Saving observation data.");
 
@@ -37,10 +41,16 @@ public class WeatherService {
         weatherRepository.saveAll(weatherData);
     }
 
+    /**
+     * Searches for weather record for provided city and optional time.
+     * @param city City to search for weather by.
+     * @param time If time is provided then searches for weather records at the provided time.
+     *             Otherwise, uses current time to search for weather.
+     * @return Found weather. Throws exception if no weather is found.
+     */
     public Weather findWeatherByCityAndTime(City city, Optional<LocalDateTime> time) {
 
         LocalDateTime timeToSearchBy = time.orElseGet(LocalDateTime::now);
-
         return weatherRepository
                 .findWeatherByStationAndTime(city.getStationName(), timeToSearchBy)
                 .orElseThrow(() -> new EntityNotFoundException(

@@ -60,9 +60,7 @@ public class WindSpeedFeeIntegrationTests {
         Weather weather = new Weather();
         weather.setWindSpeed(windSpeed);
 
-        Vehicle vehicle = vehicleRepository
-                .findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException());
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(vehicleName, Optional.ofNullable(null));
 
         return windSpeedFeeService
                 .calculateFee(vehicle, weather, Optional.ofNullable(null));
@@ -93,8 +91,8 @@ public class WindSpeedFeeIntegrationTests {
         Weather weather = new Weather();
         weather.setWindSpeed(windSpeed);
 
-        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(vehicleName, Optional.ofNullable(time));
-
+        Vehicle vehicle = vehicleService
+                .findVehicleByNameAndTime(vehicleName, Optional.of(time));
         return windSpeedFeeService
                 .calculateFee(vehicle, weather, Optional.ofNullable(time));
 

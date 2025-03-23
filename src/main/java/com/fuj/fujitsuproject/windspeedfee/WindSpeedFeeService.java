@@ -1,5 +1,6 @@
 package com.fuj.fujitsuproject.windspeedfee;
 
+import com.fuj.fujitsuproject.shared.exception.VehicleDeletedException;
 import com.fuj.fujitsuproject.shared.service.VehicleAndWeatherBasedFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.weather.Weather;
@@ -31,18 +32,33 @@ public class WindSpeedFeeService extends VehicleAndWeatherBasedFeeService<WindSp
         this.mapper = mapper;
     }
 
+    /**
+     * Finds all wind speed fees from database. Used method of superclass.
+     * @param activeOnly If active only is true then returns only those fees
+     *                   that are currently active. Otherwise, returns all fees.
+     * @return List of found wind speed fees as DTOs.
+     */
+    public List<WindSpeedFeeDTO> findAllWindSpeedFees(boolean activeOnly) {
+        return findAllFees(activeOnly)
+                .stream()
+                .map(fee -> mapper.toDTO(fee))
+                .toList();
+    }
 
     /**
      * Creates and saves new WindSpeedFee entity.
      * Before adding a new wind speed fee checks if there is already active
      * wind speed fee with overlapping wind speed range.
      * @param windSpeedFeeCreateDTO the DTO containing wind speed fee details
-     * @return the saved wind speed fee entity
+     * @return the saved wind speed fee entity as DTO. If provided vehicle
+     * is deleted the throws exception.
      */
-    public WindSpeedFee createWindSpeedFee(WindSpeedFeeCreateDTO windSpeedFeeCreateDTO) {
+    public WindSpeedFeeDTO createWindSpeedFee(WindSpeedFeeCreateDTO windSpeedFeeCreateDTO) {
 
         Vehicle vehicle = vehicleService
                 .findVehicleById(windSpeedFeeCreateDTO.getVehicleId());
+        if (vehicle.isDeleted()) throw new VehicleDeletedException("Couldn't create " +
+                "new wind seed fee because provided vehicle is deleted.");
 
         BigDecimal minSpeed = windSpeedFeeCreateDTO.getMinSpeed();
         BigDecimal maxSpeed = windSpeedFeeCreateDTO.getMaxSpeed();
@@ -51,9 +67,17 @@ public class WindSpeedFeeService extends VehicleAndWeatherBasedFeeService<WindSp
 
         WindSpeedFee windSpeedFee = mapper.toWindSpeedFee(windSpeedFeeCreateDTO, vehicle);
 
-        return repository.save(windSpeedFee);
+        WindSpeedFee savedFee = repository.save(windSpeedFee);
+        return mapper.toDTO(savedFee);
     }
 
+    /**
+     * Checks for wind speed fees with overlapping wind speed ranges. If such
+     * fees are found then exception is thrown.
+     * @param minSpeed minimum speed
+     * @param maxSpeed maximum speed
+     * @param vehicle vehicle to search for fees by.
+     */
     private void checkForOverlappingFees(BigDecimal minSpeed, BigDecimal maxSpeed, Vehicle vehicle) {
         List<WindSpeedFee> overlappingWindSpeedFees = repository
                 .findActiveWindSpeedFeesWithOverlappingSpeedRangeByVehicleId(
@@ -63,6 +87,14 @@ public class WindSpeedFeeService extends VehicleAndWeatherBasedFeeService<WindSp
 
     }
 
+    /**
+     * Implementation of abstract superclass method.
+     * @param vehicle the vehicle to find fee for.
+     * @param weather the weather to find fee for.
+     * @param time the specific time for which the fee is to be found.
+     * @return found WindSpeedFee
+     */
+    @Override
     protected Optional<WindSpeedFee> findFeeByVehicleAndWeatherAndTime(
             Vehicle vehicle, Weather weather, LocalDateTime time) {
 
@@ -71,6 +103,13 @@ public class WindSpeedFeeService extends VehicleAndWeatherBasedFeeService<WindSp
                         vehicle.getId(), weather.getWindSpeed(), time);
     }
 
+    /**
+     * Implementation of abstract method from superclass.
+     * @param vehicle the vehicle to find fee for
+     * @param weather the weather to find fee for
+     * @return found WindSpeedFee
+     */
+    @Override
     protected Optional<WindSpeedFee> findActiveFeeByVehicleAndWeather(
             Vehicle vehicle, Weather weather) {
 

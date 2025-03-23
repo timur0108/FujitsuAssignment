@@ -19,25 +19,25 @@ public class AirTemperatureFeeController {
      * Controller for returning list of all air temperature fees.
      * @param activeOnly If activeOnly is true then returns only those fees that are
      *                   currently active.
-     * @return ResponseEntity containing list of returned air temperature fees.
+     * @return ResponseEntity containing list of returned air temperature fees as DTO.
      */
     @GetMapping("/all")
-    public ResponseEntity<List<AirTemperatureFee>> getAllAirTemperatureFees(
+    public ResponseEntity<List<AirTemperatureFeeDTO>> getAllAirTemperatureFees(
             @RequestParam(required = false, defaultValue = "false") boolean activeOnly
     ) {
         return ResponseEntity
                 .ok()
-                .body(airTemperatureFeeService.findAllFees(activeOnly));
+                .body(airTemperatureFeeService.getAllAirTemperatureFees(activeOnly));
     }
 
     /**
      * Controller for creating new air temperature fee.
      * @param airTemperatureFeeCreateDTO DTO containing all needed data for
      *                                   creating new air temperature fee.
-     * @return returns ReponseEntity containing newly created air temperature fee.
+     * @return returns ReponseEntity containing newly created air temperature fee as dto.
      */
     @PostMapping
-    public ResponseEntity<AirTemperatureFee> addAirTemperatureFee(
+    public ResponseEntity<AirTemperatureFeeDTO> addAirTemperatureFee(
             @RequestBody @Valid AirTemperatureFeeCreateDTO airTemperatureFeeCreateDTO) {
 
         return new ResponseEntity<>(

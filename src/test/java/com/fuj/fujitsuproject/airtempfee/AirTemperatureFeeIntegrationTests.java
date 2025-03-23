@@ -2,6 +2,7 @@ package com.fuj.fujitsuproject.airtempfee;
 
 import com.fuj.fujitsuproject.airtempfee.AirTemperatureFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
+import com.fuj.fujitsuproject.vehicle.VehicleService;
 import com.fuj.fujitsuproject.weather.Weather;
 import com.fuj.fujitsuproject.vehicle.VehicleRepository;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,7 +28,7 @@ public class AirTemperatureFeeIntegrationTests {
     private AirTemperatureFeeService airTemperatureFeeService;
 
     @Autowired
-    private VehicleRepository vehicleRepository;
+    private VehicleService vehicleService;
 
     @ParameterizedTest
     @CsvSource({
@@ -51,9 +52,7 @@ public class AirTemperatureFeeIntegrationTests {
         Weather weather = new Weather();
         weather.setAirTemperature(temperature);
 
-        Vehicle vehicle = vehicleRepository
-                .findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException());
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(vehicleName, Optional.ofNullable(null));
 
         BigDecimal feeAmount = airTemperatureFeeService.calculateFee(vehicle, weather, Optional.ofNullable(null));
         assertNotNull(feeAmount);
@@ -79,9 +78,7 @@ public class AirTemperatureFeeIntegrationTests {
         Weather weather = new Weather();
         weather.setAirTemperature(temperature);
 
-        Vehicle vehicle = vehicleRepository
-                .findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException());
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(vehicleName, Optional.ofNullable(time));
 
         BigDecimal feeAmount = airTemperatureFeeService.calculateFee(vehicle, weather, Optional.ofNullable(time));
         assertNotNull(feeAmount);

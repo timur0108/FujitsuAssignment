@@ -106,9 +106,18 @@ public abstract class VehicleAndWeatherBasedFeeService<E extends VehicleAndWeath
         repository.save(fee);
     }
 
-    @Transactional
+    /**
+     * Deactivated all fees that are connected to vehicle with provided id.
+     * @param id id to search for vehicle by.
+     */
     public void deactivateByVehicleId(Long id) {
-        List<E> fees = repository.findByVehicleIdAndActiveTrue(id);
-        fees.stream().forEach(fee -> deactivateFee(fee.getId()));
+        repository.findByVehicleIdAndActiveTrue(id)
+                .stream()
+                .forEach(fee -> {
+                    fee.setActive(false);
+                    fee.setDeactivatedAt(LocalDateTime.now());
+                    repository.save(fee);
+                });
+
     }
 }

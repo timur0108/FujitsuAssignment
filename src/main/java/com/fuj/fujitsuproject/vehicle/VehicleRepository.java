@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +22,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     AND (v.deletedAt IS NULL OR v.deletedAt > :time) 
 """)
     Optional<Vehicle> findByNameAndTime(String name, LocalDateTime time);
+
+    List<Vehicle> findAllByDeletedFalse();
 }

@@ -23,7 +23,7 @@ public class RegionalBaseFeeController {
      * @return ResponseEntity containing all found regional base fees.
      */
     @GetMapping("/all")
-    public ResponseEntity<List<RegionalBaseFee>> getAllRegionalBaseFees(
+    public ResponseEntity<List<RegionalBaseFeeDTO>> getAllRegionalBaseFees(
             @RequestParam(required = false, defaultValue = "false") boolean activeOnly
     ) {
         return ResponseEntity
@@ -34,7 +34,9 @@ public class RegionalBaseFeeController {
     /**
      * Handles POST request to add a new regional base fee.
      * Accepts a request body containing the data for a new regional base fee and
-     * calls service layer to process this data.
+     * calls service layer to process this data. If regional base fee with such combination
+     * of city and vehicle already exists, then deactivates already existing
+     * regional base fee and creates new active one.
      * @param regionalBaseFeeCreateDTO the data transfer object containing the details
      *                                 for the new regional base fee.
      * @return a ResponseEntity containing the newly created regional base fee

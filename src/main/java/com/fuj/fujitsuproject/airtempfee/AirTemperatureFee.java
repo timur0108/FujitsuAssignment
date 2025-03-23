@@ -21,7 +21,4 @@ public class AirTemperatureFee extends VehicleAndWeatherBasedFee {
     @Column(name = "max_temperature", nullable = false)
     private BigDecimal maxTemperature;
 
-    @Column(name = "amount")
-    private BigDecimal amount;
-
 }

@@ -3,6 +3,7 @@ package com.fuj.fujitsuproject.regionalbasefee;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fuj.fujitsuproject.city.City;
 import com.fuj.fujitsuproject.city.CityRepository;
+import com.fuj.fujitsuproject.city.CityService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

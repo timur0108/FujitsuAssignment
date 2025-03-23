@@ -7,6 +7,7 @@ import com.fuj.fujitsuproject.city.CityService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.city.CityRepository;
 import com.fuj.fujitsuproject.vehicle.VehicleRepository;
+import com.fuj.fujitsuproject.vehicle.VehicleService;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public class RegionalBaseFeeIntegrationTests {
     private CityService cityService;
 
     @Autowired
+    private VehicleService vehicleService;
+
+    @Autowired
     private VehicleRepository vehicleRepository;
 
     @ParameterizedTest
@@ -50,11 +54,10 @@ public class RegionalBaseFeeIntegrationTests {
     void testRegionalBaseFeeCalculation(String vehicleName, String cityName,
                                         BigDecimal expectedFee) {
 
-        Vehicle vehicle = vehicleRepository.findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(
+                vehicleName, Optional.ofNullable(null));
 
-        City city = cityRepository.findByNameEquals(cityName)
-                .orElseThrow(() -> new RuntimeException("City not found"));
+        City city = cityService.findCityByNameAndTime(cityName, Optional.ofNullable(null));
 
         BigDecimal feeAmount = regionalBaseFeeService.calculateFeeForVehicleAndCity(
                 vehicle, city, Optional.of(LocalDateTime.now()));
@@ -80,8 +83,7 @@ public class RegionalBaseFeeIntegrationTests {
     void testRegionalBaseFeeCalculationWithTimeProvided(
             String vehicleName, String cityName, BigDecimal expectedFee, LocalDateTime time
     ) {
-        Vehicle vehicle = vehicleRepository.findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException("Vehicle not found"));
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(vehicleName, Optional.of(time));
 
         City city = cityService.findCityByNameAndTime(cityName, Optional.ofNullable(time));
         System.out.println("City for " + cityName + " =" + city);

@@ -95,4 +95,37 @@ public class ExceptionControllerAdvice {
                 .badRequest()
                 .body(errorDetails);
     }
+
+    @ExceptionHandler(VehicleDeletedException.class)
+    public ResponseEntity<ErrorDetails> exceptionVehicleDeletedHandler(
+            VehicleDeletedException e) {
+
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setMessage(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(errorDetails);
+    }
+
+    @ExceptionHandler(CityDeletedException.class)
+    public ResponseEntity<ErrorDetails> exceptionCityDeletedHandler(
+            CityDeletedException e) {
+
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setMessage(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(errorDetails);
+    }
+
+    @ExceptionHandler(VehicleAlreadyDeletedException.class)
+    public ResponseEntity<ErrorDetails> exceptionVehicleAlreadyDeletedHandler(
+            VehicleAlreadyDeletedException e) {
+
+        ErrorDetails errorDetails = new ErrorDetails();
+        errorDetails.setMessage(e.getMessage());
+        return ResponseEntity
+                .badRequest()
+                .body(errorDetails);
+    }
 }

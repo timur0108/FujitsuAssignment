@@ -18,5 +18,4 @@ public class WeatherPhenomenonFee extends VehicleAndWeatherBasedFee {
     @Column(name = "phenomenon", nullable = false)
     private String phenomenon;
 
-
 }

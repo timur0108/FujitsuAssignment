@@ -7,9 +7,18 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * class that provided method for mapping observation data to List of Weather entities.
+ */
 @Component
 public class ObservationDataToWeatherMapper {
 
+    /**
+     * Maps observation and List of stations to list of weather entities.
+     * @param observations observation object needed to extract data from.
+     * @param stations List of stations from which observation data needs to be extracted.
+     * @return returns List of Weather entities for needed stations.
+     */
     public List<Weather> toWeatherList(Observations observations, List<String> stations) {
 
         LocalDateTime observationTime = TimeUtils

@@ -6,6 +6,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+/**
+ * Scheduled component that periodically fetches data from external API using the
+ * WeatherDataFetcher client. After that saves data using WeatherService.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor

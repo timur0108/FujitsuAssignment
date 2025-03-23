@@ -1,5 +1,6 @@
 package com.fuj.fujitsuproject.airtempfee;
 
+import com.fuj.fujitsuproject.shared.exception.VehicleDeletedException;
 import com.fuj.fujitsuproject.shared.service.VehicleAndWeatherBasedFeeService;
 import com.fuj.fujitsuproject.vehicle.Vehicle;
 import com.fuj.fujitsuproject.weather.Weather;
@@ -7,6 +8,7 @@ import com.fuj.fujitsuproject.shared.exception.OverlappingAirTemperatureFeesExce
 import com.fuj.fujitsuproject.vehicle.VehicleService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,6 +27,7 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
     private final VehicleService vehicleService;
     private final AirTemperatureFeeMapper mapper;
 
+    @Autowired
     public AirTemperatureFeeService(AirTemperatureFeeRepository repository, VehicleService vehicleService,
                                     AirTemperatureFeeMapper mapper) {
         super(repository);
@@ -32,6 +35,18 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
         this.mapper = mapper;
     }
 
+    /**
+     * Searches for all fees from database. Uses method of abstract superclass.
+     * @param activeOnly If activeOnly is true then searches only those fees that
+     *                   are currently active. Otherwise, searches for all fees.
+     * @return List of found air temperature fees as DTOs.
+     */
+    public List<AirTemperatureFeeDTO> getAllAirTemperatureFees(boolean activeOnly) {
+        return findAllFees(activeOnly)
+                .stream()
+                .map(fee -> mapper.toDTO(fee))
+                .toList();
+    }
 
     /**
      * Creates a new AirTemperatureFee based on the provided DTO.
@@ -39,12 +54,13 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
      * @param airTemperatureFeeCreateDTO The DTO containing the data to create a new AirTemperatureFee.
      * @return created AirTemperatureFee entity.
      */
-    public AirTemperatureFee createAirTemperatureFee(AirTemperatureFeeCreateDTO airTemperatureFeeCreateDTO) {
+    public AirTemperatureFeeDTO createAirTemperatureFee(AirTemperatureFeeCreateDTO airTemperatureFeeCreateDTO) {
 
         log.info("dto " + airTemperatureFeeCreateDTO.toString());
         Vehicle vehicle = vehicleService
                 .findVehicleById(airTemperatureFeeCreateDTO.getVehicleId());
-        if (vehicle.isDeleted()) throw new EntityNotFoundException("Provided vehicle is currently deleted");
+        if (vehicle.isDeleted()) throw new VehicleDeletedException("Couldn't create new air temperature fee because" +
+                "provided vehicle is currently deleted");
 
         BigDecimal minTemperature = airTemperatureFeeCreateDTO.getMinTemperature();
         BigDecimal maxTemperature = airTemperatureFeeCreateDTO.getMaxTemperature();
@@ -52,7 +68,8 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
         checkForOverlappingFees(vehicle, minTemperature, maxTemperature);
 
         AirTemperatureFee airTemperatureFee = mapper.toAirTemperatureFee(airTemperatureFeeCreateDTO, vehicle);
-        return repository.save(airTemperatureFee);
+        AirTemperatureFee savedFee = repository.save(airTemperatureFee);
+        return mapper.toDTO(savedFee);
     }
 
     /**
@@ -78,6 +95,7 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
      * @param time the specific time for which the fee is to be found.
      * @return
      */
+    @Override
     protected Optional<AirTemperatureFee> findFeeByVehicleAndWeatherAndTime(
             Vehicle vehicle, Weather weather, LocalDateTime time) {
 
@@ -92,6 +110,7 @@ public class AirTemperatureFeeService extends VehicleAndWeatherBasedFeeService<A
      * @param weather the weather to find fee for
      * @return
      */
+    @Override
     protected Optional<AirTemperatureFee> findActiveFeeByVehicleAndWeather(
             Vehicle vehicle, Weather weather) {
 

@@ -1,6 +1,7 @@
 package com.fuj.fujitsuproject.weatherphenomenonfee;
 
 import com.fuj.fujitsuproject.vehicle.Vehicle;
+import com.fuj.fujitsuproject.vehicle.VehicleService;
 import com.fuj.fujitsuproject.weather.Weather;
 import com.fuj.fujitsuproject.shared.exception.VehicleForbiddenException;
 import com.fuj.fujitsuproject.vehicle.VehicleRepository;
@@ -27,6 +28,9 @@ public class WeatherPhenomenonFeeIntegrationTests {
 
     @Autowired
     private VehicleRepository vehicleRepository;
+
+    @Autowired
+    private VehicleService vehicleService;
 
     @ParameterizedTest
     @CsvSource({
@@ -72,9 +76,8 @@ public class WeatherPhenomenonFeeIntegrationTests {
         Weather weather = new Weather();
         weather.setWeatherPhenomenon(weatherPhenomenon);
 
-        Vehicle vehicle = vehicleRepository
-                .findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException());
+        Vehicle vehicle = vehicleService
+                .findVehicleByNameAndTime(vehicleName, Optional.ofNullable(null));
 
         return weatherPhenomenonFeeService.calculateFee(vehicle, weather, Optional.ofNullable(null));
     }
@@ -104,9 +107,9 @@ public class WeatherPhenomenonFeeIntegrationTests {
         Weather weather = new Weather();
         weather.setWeatherPhenomenon(weatherPhenomenon);
 
-        Vehicle vehicle = vehicleRepository
-                .findByNameEqualsIgnoreCase(vehicleName)
-                .orElseThrow(() -> new RuntimeException());
+        Vehicle vehicle = vehicleService.findVehicleByNameAndTime(
+                vehicleName, Optional.ofNullable(time)
+        );
 
         return weatherPhenomenonFeeService.calculateFee(vehicle, weather, Optional.ofNullable(time));
     }
